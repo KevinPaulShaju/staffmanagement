@@ -14,6 +14,10 @@ app.use(express.urlencoded({ extended: false }));
 // connecting to db
 connectDB();
 
+app.get('/',(req, res) => {
+  res.send("hey");
+});
+
 // routes
 app.use("/api/admin", adminRoutes);
 

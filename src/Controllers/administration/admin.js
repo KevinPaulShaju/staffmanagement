@@ -6,9 +6,11 @@ const jwt = require("jsonwebtoken");
 exports.registerAdmin = async (req, res) => {
   const { name, email, gender, phone, role, password, password2 } = req.body;
   // validating the input
+
   if (!req.body) {
     return res.status(406).json({ message: "Inputs can not be left empty." });
   }
+
   const { error } = userValidation(req.body);
   if (error) {
     return res.status(406).json({ message: error.details[0].message });
@@ -23,7 +25,9 @@ exports.registerAdmin = async (req, res) => {
         .json({ message: "This user already exists. Try logging in." });
     }
     // confirming passwords
-    else if (password !== password2) {
+    else if (password !== password2) {if (!req.body) {
+      return res.status(406).json({ message: "Inputs can not be left empty." });
+    }
       return res.status(406).json({ message: "Passwords do not match." });
     }
     const newAdmin = new Admin(req.body);
@@ -36,11 +40,14 @@ exports.registerAdmin = async (req, res) => {
   }
 };
 
+
 exports.adminLogin = async (req, res) => {
-  if (!req.body) {
-    return res.status(406).json({ message: "Inputs can not be left empty." });
-  }
+  
   const { email, password } = req.body;
+
+  if(!email || !password) {
+    return res.status(406).json({error:"Both Email & Password must be provided"});
+  }
 
   try {
     // checking if the user exists
@@ -55,7 +62,7 @@ exports.adminLogin = async (req, res) => {
     const match = await bcrypt.compare(password, existingAdmin.password);
     if (!match) {
       return res.status(401).json({
-        message: "Invalid password.Please check your password and try again",
+        message: "Invalid Credentials",
       });
     }
 
@@ -63,8 +70,76 @@ exports.adminLogin = async (req, res) => {
     const key = process.env.JWT_SECRET;
     userId = existingAdmin._id;
     const accessToken = jwt.sign(userId.toString(), key);
+    console.log(accessToken);
     res.status(200).json({ accessToken: accessToken });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+exports.updateAdminDetails = async (req, res)=>{
+
+    const updates = Object.keys(req.body);
+
+    const allowUpdates = ["name","phone"];
+
+    const isValidOperation = updates.every((update)=>allowUpdates.includes(update));
+
+    if(!isValidOperation){
+        return res.status(400).json({error:"Invalid Operation"});
+    }
+  
+    try {
+
+        updates.forEach((update)=> req.user[update]=req.body[update])
+        await req.user.save();
+        res.status(200).json({message: "Update Successfully"});
+
+    } catch (error) {
+
+      res.status(500).json({error:error.message});
+
+    }
+}
+
+
+exports.updateAdminPasswords = async (req, res)=>{
+
+    if(req.body.password !== req.body.password2){
+      return res.status(400).json({error:"Passwords not matching."})
+    }
+
+    const updates = Object.keys(req.body);
+
+    const allowUpdates = ["password","password2"];
+
+    const isValidOperation = updates.every((update)=>allowUpdates.includes(update));
+
+    if(!isValidOperation){
+        return res.status(400).json({error:"Invalid Operation"});
+    }
+
+    try {
+
+        updates.forEach((update)=> req.user[update]=req.body[update])
+        await req.user.save();
+        res.status(200).json({message: "Password Update Successfully"});
+
+    } catch (error) {
+
+      res.status(500).json({error:error.message});
+
+    }
+}
+
+exports.deleteAdminAccount = async (req, res) => {
+  try {
+
+      await req.user.remove();
+      res.status(200).json({message:"Admin Account Deleted"});
+
+  } catch (e) {
+      res.status(500).json({error:e.message});
+  }
+}
