@@ -3,6 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const adminRoutes = require("./Routes/administration/admin");
 const hrRoutes = require("./Routes/administration/hr");
+const managerRoute = require("./Routes/administration/manager");
 const connectDB = require("./Database/database");
 
 // env config
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 // routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/hr", hrRoutes);
+app.use("/api/manager",managerRoute);
 
 const PORT = process.env.PORT || 5000;
 

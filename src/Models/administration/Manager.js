@@ -1,5 +1,7 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
+
+
 const ManagerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
@@ -8,6 +10,7 @@ const ManagerSchema = new mongoose.Schema({
   role: { type: String, required: true, default: "hr" },
   password: { type: String, required: true },
 });
+
 
 //Hashing the Password
 ManagerSchema.pre("save", async function (next) {
@@ -18,6 +21,8 @@ ManagerSchema.pre("save", async function (next) {
   }
   next();
 });
+
+
 
 const Manager = mongoose.model("Manager", ManagerSchema);
 module.exports = Manager;

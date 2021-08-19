@@ -1,15 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 const {
   userValidation,
   updateValidation,
   passwordValidation,
 } = require("../../Services/validation");
-const Admin = require("../../Models/administration/Admin");
+
 const HResources = require("../../Models/administration/HResources");
-const Manager = require("../../Models/administration/Manager");
-const Finance = require("../../Models/administration/Finance");
-const Support = require("../../Models/administration/Support");
 
 exports.createHr = async (req, res) => {
   const { name, email, gender, phone, role, password, password2 } = req.body;
@@ -35,13 +33,9 @@ exports.createHr = async (req, res) => {
     if (existingHr) {
       return res.status(406).json({ message: "This user already exists." });
     }
+
     // confirming passwords
-    else if (password !== password2) {
-      if (!req.body) {
-        return res
-          .status(406)
-          .json({ message: "Inputs can not be left empty." });
-      }
+    if (password !== password2) {
       return res.status(406).json({ message: "Passwords do not match." });
     }
 

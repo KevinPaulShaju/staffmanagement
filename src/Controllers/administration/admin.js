@@ -17,6 +17,7 @@ exports.registerAdmin = async (req, res) => {
   }
 
   try {
+    
     //   checking if the email has already registered
     const existingAdmin = await Admin.findOne({ email: email });
     if (existingAdmin) {
@@ -24,15 +25,12 @@ exports.registerAdmin = async (req, res) => {
         .status(406)
         .json({ message: "This user already exists. Try logging in." });
     }
+
     // confirming passwords
-    else if (password !== password2) {
-      if (!req.body) {
-        return res
-          .status(406)
-          .json({ message: "Inputs can not be left empty." });
-      }
+    if (password !== password2) {
       return res.status(406).json({ message: "Passwords do not match." });
     }
+
     const newAdmin = new Admin(req.body);
     const savedAdmin = await newAdmin.save();
     res.status(200).json({

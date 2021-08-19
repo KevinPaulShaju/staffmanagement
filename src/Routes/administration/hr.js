@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { ensureHr } = require("../../middlewares/auth");
+
 const {
   createHr,
   hrLogin,
@@ -43,5 +44,6 @@ router.post("/update/passwords/:hrId", ensureHr, updateHrPasswords);
  * **/
 
 router.get("/account/delete/:hrId", ensureHr, deleteHrAccount);
+
 
 module.exports = router;
