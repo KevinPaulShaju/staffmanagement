@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { ensureAuthenticated } = require("../../middlewares/auth");
+const { ensureAdmin } = require("../../middlewares/auth");
 const {
   adminLogin,
   registerAdmin,
   updateAdminDetails,
   updateAdminPasswords,
-  deleteAdminAccount
+  deleteAdminAccount,
 } = require("../../Controllers/administration/admin");
 
 /**
@@ -28,20 +28,20 @@ router.post("/login", adminLogin);
  * @method POST /update
  * **/
 
-router.post("/update/details", ensureAuthenticated, updateAdminDetails);
+router.post("/update/details", ensureAdmin, updateAdminDetails);
 
 /**
  * @description  update admin passwords
  * @method POST /update
  * **/
 
- router.post("/update/passwords", ensureAuthenticated, updateAdminPasswords);
+router.post("/update/passwords", ensureAdmin, updateAdminPasswords);
 
- /**
+/**
  * @description  delete admin account
  * @method GET /update
  * **/
 
- router.get("/account/delete",ensureAuthenticated,deleteAdminAccount);
+router.get("/account/delete", ensureAdmin, deleteAdminAccount);
 
 module.exports = router;

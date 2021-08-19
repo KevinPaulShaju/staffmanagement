@@ -1,5 +1,5 @@
 const Admin = require("../../Models/administration/Admin");
-const userValidation = require("../../Services/validation");
+const { userValidation } = require("../../Services/validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -25,9 +25,12 @@ exports.registerAdmin = async (req, res) => {
         .json({ message: "This user already exists. Try logging in." });
     }
     // confirming passwords
-    else if (password !== password2) {if (!req.body) {
-      return res.status(406).json({ message: "Inputs can not be left empty." });
-    }
+    else if (password !== password2) {
+      if (!req.body) {
+        return res
+          .status(406)
+          .json({ message: "Inputs can not be left empty." });
+      }
       return res.status(406).json({ message: "Passwords do not match." });
     }
     const newAdmin = new Admin(req.body);
@@ -40,13 +43,13 @@ exports.registerAdmin = async (req, res) => {
   }
 };
 
-
 exports.adminLogin = async (req, res) => {
-  
   const { email, password } = req.body;
 
-  if(!email || !password) {
-    return res.status(406).json({error:"Both Email & Password must be provided"});
+  if (!email || !password) {
+    return res
+      .status(406)
+      .json({ error: "Both Email & Password must be provided" });
   }
 
   try {
@@ -77,69 +80,59 @@ exports.adminLogin = async (req, res) => {
   }
 };
 
+exports.updateAdminDetails = async (req, res) => {
+  const updates = Object.keys(req.body);
 
-exports.updateAdminDetails = async (req, res)=>{
+  const allowUpdates = ["name", "phone"];
 
-    const updates = Object.keys(req.body);
+  const isValidOperation = updates.every((update) =>
+    allowUpdates.includes(update)
+  );
 
-    const allowUpdates = ["name","phone"];
+  if (!isValidOperation) {
+    return res.status(400).json({ error: "Invalid Operation" });
+  }
 
-    const isValidOperation = updates.every((update)=>allowUpdates.includes(update));
+  try {
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.status(200).json({ message: "Update Successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
-    if(!isValidOperation){
-        return res.status(400).json({error:"Invalid Operation"});
-    }
-  
-    try {
+exports.updateAdminPasswords = async (req, res) => {
+  if (req.body.password !== req.body.password2) {
+    return res.status(400).json({ error: "Passwords not matching." });
+  }
 
-        updates.forEach((update)=> req.user[update]=req.body[update])
-        await req.user.save();
-        res.status(200).json({message: "Update Successfully"});
+  const updates = Object.keys(req.body);
 
-    } catch (error) {
+  const allowUpdates = ["password", "password2"];
 
-      res.status(500).json({error:error.message});
+  const isValidOperation = updates.every((update) =>
+    allowUpdates.includes(update)
+  );
 
-    }
-}
+  if (!isValidOperation) {
+    return res.status(400).json({ error: "Invalid Operation" });
+  }
 
-
-exports.updateAdminPasswords = async (req, res)=>{
-
-    if(req.body.password !== req.body.password2){
-      return res.status(400).json({error:"Passwords not matching."})
-    }
-
-    const updates = Object.keys(req.body);
-
-    const allowUpdates = ["password","password2"];
-
-    const isValidOperation = updates.every((update)=>allowUpdates.includes(update));
-
-    if(!isValidOperation){
-        return res.status(400).json({error:"Invalid Operation"});
-    }
-
-    try {
-
-        updates.forEach((update)=> req.user[update]=req.body[update])
-        await req.user.save();
-        res.status(200).json({message: "Password Update Successfully"});
-
-    } catch (error) {
-
-      res.status(500).json({error:error.message});
-
-    }
-}
+  try {
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.status(200).json({ message: "Password Update Successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 exports.deleteAdminAccount = async (req, res) => {
   try {
-
-      await req.user.remove();
-      res.status(200).json({message:"Admin Account Deleted"});
-
+    await req.user.remove();
+    res.status(200).json({ message: "Admin Account Deleted" });
   } catch (e) {
-      res.status(500).json({error:e.message});
+    res.status(500).json({ error: e.message });
   }
-}
+};
