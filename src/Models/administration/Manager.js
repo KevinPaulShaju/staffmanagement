@@ -7,7 +7,7 @@ const ManagerSchema = new mongoose.Schema({
   email: { type: String, required: true },
   phone: { type: String, required: true },
   gender: { type: String, required: true, enum: ["male", "female", "other"] },
-  role: { type: String, required: true, default: "hr" },
+  role: { type: String, required: true, default: "manager" },
   password: { type: String, required: true },
 });
 
