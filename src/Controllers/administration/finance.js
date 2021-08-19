@@ -78,6 +78,22 @@ exports.financeLogin = async (req, res) => {
   }
 };
 
+
+exports.financeDetails = async (req, res) => {
+  try {
+    const _id = req.user.id;
+    const findFinance = await Finance.findOne({ _id }).select("-password");
+    if(!findFinance) {
+      return res.status(404).json({ error: 'Finance not found' });
+    }
+
+    res.status(200).json({message: findFinance});
+
+  } catch (e) {
+    res.status(500).json({error: e.message});
+  }
+}
+
 exports.updateFinanceDetails = async (req, res) => {
   const financeId = req.params.financeId;
   const { error } = updateValidation(req.body);

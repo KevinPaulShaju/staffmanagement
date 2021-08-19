@@ -80,6 +80,20 @@ exports.managerLogin = async (req, res) => {
   }
 };
 
+
+exports.managerDetails = async (req, res) => {
+  try {
+    const _id = req.user.id;
+    const findManager = await Manager.findOne({ _id }).select("-password");
+    if(!findManager) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+    res.status(200).json({message: findManager});
+  } catch (e) {
+    res.status(500).json({error: e.message});
+  }
+}
+
 exports.updateManagerDetails = async (req, res) => {
 
   const managerId = req.params.managerId;

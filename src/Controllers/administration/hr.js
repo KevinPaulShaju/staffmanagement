@@ -84,6 +84,21 @@ exports.hrLogin = async (req, res) => {
   }
 };
 
+
+exports.hrDetails = async (req, res) => {
+  try {
+    const _id = req.user.id;
+    const findHR = await HResources.findOne({ _id }).select("-password");
+    if(!findHR) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+    res.status(200).json({message: findHR});
+  } catch (e) {
+    res.status(500).json({error: e.message});
+  }
+}
+
+
 exports.updateHrDetails = async (req, res) => {
   const hrId = req.params.hrId;
   const { error } = updateValidation(req.body);

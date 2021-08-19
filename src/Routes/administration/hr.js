@@ -8,6 +8,7 @@ const {
   updateHrDetails,
   updateHrPasswords,
   deleteHrAccount,
+  hrDetails
 } = require("../../Controllers/administration/hr");
 
 /**
@@ -28,6 +29,9 @@ router.post("/login", hrLogin);
  * @description  update hr details
  * @method POST /update
  * **/
+
+// To View profile
+router.get("/view", ensureHr , hrDetails);
 
 router.post("/update/details/:hrId", ensureHr, updateHrDetails);
 

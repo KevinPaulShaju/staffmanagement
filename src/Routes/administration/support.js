@@ -7,7 +7,8 @@ const {
     supportLogin,
     updateSupportDetails,
     updateSupportPasswords,
-    deleteSupportAccount
+    deleteSupportAccount,
+    supportDetails
 } = require("../../Controllers/administration/support");
 
 /**
@@ -28,6 +29,11 @@ router.post("/login", supportLogin);
  * @description  update suport details
  * @method POST /update
  * **/
+
+
+// To View profile
+router.get("/view", ensureSupport,supportDetails);
+
 
 router.post("/update/details/:supportId", ensureSupport, updateSupportDetails);
 

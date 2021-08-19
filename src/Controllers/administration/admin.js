@@ -1,4 +1,5 @@
 const Admin = require("../../Models/administration/Admin");
+const HR = require("../../Models/administration/HResources");
 const { userValidation } = require("../../Services/validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -76,6 +77,21 @@ exports.adminLogin = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+exports.adminDetails = async (req, res) => {
+  try {
+    const _id = req.user.id;
+    const findAdmin = await Admin.findOne({ _id }).select("-password");
+    if(!findAdmin) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+    res.status(200).json({message: findAdmin});
+  } catch (e) {
+    res.status(500).json({error: e.message});
+  }
+}
+
 
 exports.updateAdminDetails = async (req, res) => {
   const updates = Object.keys(req.body);

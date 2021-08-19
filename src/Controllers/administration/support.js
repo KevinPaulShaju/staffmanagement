@@ -79,6 +79,21 @@ exports.supportLogin = async (req, res) => {
   }
 };
 
+
+exports.supportDetails = async (req, res) => {
+  try {
+    const _id = req.user.id;
+    const findSupport = await Support.findOne({ _id }).select("-password");
+    if(!findSupport) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+    res.status(200).json({message: findSupport});
+  } catch (e) {
+    res.status(500).json({error: e.message});
+  }
+}
+
+
 exports.updateSupportDetails = async (req, res) => {
 
   const supportId = req.params.supportId;

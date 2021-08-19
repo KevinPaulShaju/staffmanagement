@@ -8,6 +8,7 @@ const {
   updateFinanceDetails,
   updateFinancePasswords,
   deleteFinanceAccount,
+  financeDetails
 } = require("../../Controllers/administration/finance");
 
 /**
@@ -28,6 +29,11 @@ router.post("/login", financeLogin);
  * @description  update finance details
  * @method POST /update
  * **/
+
+
+
+router.get("/view", ensureFinance ,financeDetails);
+
 
 router.post("/update/details/:financeId", ensureFinance, updateFinanceDetails);
 
