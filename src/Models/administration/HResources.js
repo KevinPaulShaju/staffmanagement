@@ -19,5 +19,6 @@ HResourcesSchema.pre("save", async function (next) {
   next();
 });
 
+
 const HResources = mongoose.model("HResources", HResourcesSchema);
 module.exports = HResources;

@@ -8,27 +8,26 @@ exports.registerAdmin = async (req, res) => {
   // validating the input
 
   if (!req.body) {
-    return res.status(406).json({ message: "Inputs can not be left empty." });
+    return res.status(406).json({ error: "Inputs can not be left empty." });
   }
 
   const { error } = userValidation(req.body);
   if (error) {
-    return res.status(406).json({ message: error.details[0].message });
+    return res.status(406).json({ error: error.details[0].message });
   }
 
   try {
-    
     //   checking if the email has already registered
     const existingAdmin = await Admin.findOne({ email: email });
     if (existingAdmin) {
       return res
         .status(406)
-        .json({ message: "This user already exists. Try logging in." });
+        .json({ error: "This user already exists. Try logging in." });
     }
 
     // confirming passwords
     if (password !== password2) {
-      return res.status(406).json({ message: "Passwords do not match." });
+      return res.status(406).json({ error: "Passwords do not match." });
     }
 
     const newAdmin = new Admin(req.body);
@@ -37,7 +36,7 @@ exports.registerAdmin = async (req, res) => {
       message: "User has been successfully registered. Please log in",
     });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -56,14 +55,14 @@ exports.adminLogin = async (req, res) => {
     if (!existingAdmin) {
       return res
         .status(404)
-        .json({ message: "User does not exist.Try signing up." });
+        .json({ error: "User does not exist.Try signing up." });
     }
 
     //   match password
     const match = await bcrypt.compare(password, existingAdmin.password);
     if (!match) {
       return res.status(401).json({
-        message: "Invalid Credentials",
+        error: "Invalid Credentials",
       });
     }
 
@@ -74,7 +73,7 @@ exports.adminLogin = async (req, res) => {
     console.log(accessToken);
     res.status(200).json({ accessToken: accessToken });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 

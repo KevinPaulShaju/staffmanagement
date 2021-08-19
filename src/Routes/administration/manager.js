@@ -7,43 +7,46 @@ const {
   managerLogin,
   updateManagerDetails,
   updateManagerPasswords,
-  deleteManagerAccount
+  deleteManagerAccount,
 } = require("../../Controllers/administration/manager");
 
 /**
- * @description create a new hr
+ * @description create a new manager
  * @method POST /register
  * **/
 
 router.post("/register", createManager);
 
 /**
- * @description  hr login
+ * @description  manager login
  * @method POST /login
  * **/
 
 router.post("/login", managerLogin);
 
 /**
- * @description  update hr details
+ * @description  update manager details
  * @method POST /update
  * **/
 
 router.post("/update/details/:managerId", ensureManager, updateManagerDetails);
 
 /**
- * @description  update hr passwords
+ * @description  update manager passwords
  * @method POST /update
  * **/
 
-router.post("/update/passwords/:managerId", ensureManager, updateManagerPasswords);
+router.post(
+  "/update/passwords/:managerId",
+  ensureManager,
+  updateManagerPasswords
+);
 
 /**
- * @description  delete hr account
+ * @description  delete manager account
  * @method GET /update
  * **/
 
-router.get("/account/delete/:managerId", ensureManager , deleteManagerAccount);
-
+router.get("/account/delete/:managerId", ensureManager, deleteManagerAccount);
 
 module.exports = router;
