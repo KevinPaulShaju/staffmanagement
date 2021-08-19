@@ -14,12 +14,29 @@ const userValidation = (data) => {
   return schema.validate(data);
 };
 
+const updateValidation = (data) => {
+  const schema = Joi.object({
+    name: Joi.string().required().min(3).max(20),
+    phone: Joi.string().required().min(10).custom(method, "custom validation"),
+  });
+
+  return schema.validate(data);
+};
+
+const passwordValidation = (data) => {
+  const schema = Joi.object({
+    password: Joi.string().required().min(6),
+    password2: Joi.string().required().min(6).valid(Joi.ref("password")),
+  });
+
+  return schema.validate(data);
+};
 
 const regExp = /[a-zA-Z]/g;
 
 const method = (value, helpers) => {
   // for example if the username value is (something) then it will throw an error with flowing message but it throws an error inside (value) object without error message. It should throw error inside the (error) object with a proper error message
-  
+
   if (regExp.test(value)) {
     // return new Error("Phone number should not contain");
     return helpers.message({
@@ -27,9 +44,9 @@ const method = (value, helpers) => {
       custom: '"phone" number should contain only numbers',
     });
   }
-  
+
   // Return the value unchanged
   return value;
 };
 
-module.exports = userValidation;
+module.exports = { userValidation, passwordValidation, updateValidation };
