@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const { ensureAdmin } = require("../../middlewares/auth");
+const { ensureAdmin } = require("../../middlewares/commonAuth");
+const {
+  manageFinance,
+  manageSupport,
+} = require("../../middlewares/manageStaffAuth");
 
 const {
   createHr,
   createManager,
   createFinance,
-  createSupport
+  createSupport,
 } = require("../../Controllers/administration/createSubordinates");
 
 const {
@@ -16,23 +20,19 @@ const {
   updateSupportDetails,
 } = require("../../Controllers/administration/updateSubordinatesDetails");
 
-
 const {
   updateHrPasswords,
   updateManagerPasswords,
   updateFinancePasswords,
-  updateSupportPasswords
+  updateSupportPasswords,
 } = require("../../Controllers/administration/updateSubordinatepassword");
 
-
-const{
+const {
   deleteHrAccount,
   deleteManagerAccount,
   deleteFinanceAccount,
-  deleteSupportAccount
+  deleteSupportAccount,
 } = require("../../Controllers/administration/deleteSubordinatesaccount");
-
-
 
 const {
   viewHrs,
@@ -86,16 +86,14 @@ router.post("/update/passwords", ensureAdmin, updateAdminPasswords);
  * **/
 router.get("/account/delete", ensureAdmin, deleteAdminAccount);
 
-
 // To Create Sub-ordinates
-router.post("/register/hr", ensureAdmin, createHr);
+router.post("/register/hr", createHr);
 
-router.post("/register/manager", ensureAdmin, createManager);
+router.post("/register/manager", createManager);
 
-router.post("/register/finance", ensureAdmin, createFinance);
+router.post("/register/finance", manageFinance, createFinance);
 
-router.post("/register/support", ensureAdmin, createSupport);
-
+router.post("/register/support", manageSupport, createSupport);
 
 // To Update sub-Ordinate Details
 
@@ -105,27 +103,35 @@ router.post("/register/support", ensureAdmin, createSupport);
  * **/
 router.post("/update/details/hr/:hrId", ensureAdmin, updateHrDetails);
 
-
 /**
  * @description  update finance details
  * @method POST /update/details/:financeId
  * **/
-router.post("/update/details/finance/:financeId", ensureAdmin, updateFinanceDetails);
-
+router.post(
+  "/update/details/finance/:financeId",
+  ensureAdmin,
+  updateFinanceDetails
+);
 
 /**
  * @description  update manager details
  * @method POST /update/details/:managerId
  * **/
-router.post("/update/details/manager/:managerId", ensureAdmin, updateManagerDetails);
-
+router.post(
+  "/update/details/manager/:managerId",
+  ensureAdmin,
+  updateManagerDetails
+);
 
 /**
-* @description  update suport details
-* @method POST /update/details/:supportId
-* **/
-router.post("/update/details/support/:supportId", ensureAdmin, updateSupportDetails);
-
+ * @description  update suport details
+ * @method POST /update/details/:supportId
+ * **/
+router.post(
+  "/update/details/support/:supportId",
+  ensureAdmin,
+  updateSupportDetails
+);
 
 // Update Sub-ordinate passwords
 
@@ -133,32 +139,39 @@ router.post("/update/details/support/:supportId", ensureAdmin, updateSupportDeta
  * @description  update hr passwords
  * @method POST /update/passwords/:hrId
  * **/
-router.post("/update/passwords/hr/:hrId", ensureAdmin, updateHrPasswords)
-
+router.post("/update/passwords/hr/:hrId", ensureAdmin, updateHrPasswords);
 
 /**
  * @description  update manager passwords
  * @method POST /update
  * **/
 
-router.post("/update/passwords/manager/:managerId", ensureAdmin, updateManagerPasswords);
-
+router.post(
+  "/update/passwords/manager/:managerId",
+  ensureAdmin,
+  updateManagerPasswords
+);
 
 /**
  * @description  update finance passwords
  * @method POST /update/passwords/:financeId
  * **/
-router.post("/update/passwords/finance/:financeId", ensureAdmin, updateFinancePasswords);
-
+router.post(
+  "/update/passwords/finance/:financeId",
+  ensureAdmin,
+  updateFinancePasswords
+);
 
 /**
-* @description  update support passwords
-* @method POST /update
-* **/
+ * @description  update support passwords
+ * @method POST /update
+ * **/
 
-router.post("/update/passwords/support/:supportId", ensureAdmin, updateSupportPasswords);
-
-
+router.post(
+  "/update/passwords/support/:supportId",
+  ensureAdmin,
+  updateSupportPasswords
+);
 
 // Delete Sub-ordinates account
 
@@ -166,27 +179,37 @@ router.post("/update/passwords/support/:supportId", ensureAdmin, updateSupportPa
  * @description  delete hr account
  * @method GET /account/delete/:hrId
  * **/
- router.get("/account/delete/hr/:hrId", ensureAdmin, deleteHrAccount);
+router.get("/account/delete/hr/:hrId", ensureAdmin, deleteHrAccount);
 
 /**
  * @description  delete manager account
  * @method GET /account/delete/:managerId
  * **/
- router.get("/account/delete/manager/:managerId", ensureAdmin, deleteManagerAccount);
+router.get(
+  "/account/delete/manager/:managerId",
+  ensureAdmin,
+  deleteManagerAccount
+);
 
 /**
  * @description  delete finance account
  * @method GET /account/delete/:financeId
  * **/
- router.get("/account/delete/finance/:financeId", ensureAdmin, deleteFinanceAccount);
+router.get(
+  "/account/delete/finance/:financeId",
+  ensureAdmin,
+  deleteFinanceAccount
+);
 
-
- /**
+/**
  * @description  delete support account
  * @method GET /account/delete/:supportId
  * **/
-router.get("/account/delete/support/:supportId", ensureAdmin, deleteSupportAccount);
-
+router.get(
+  "/account/delete/support/:supportId",
+  ensureAdmin,
+  deleteSupportAccount
+);
 
 /**
  * @description  to view all the HRS

@@ -2,7 +2,6 @@ const HResources = require("../../Models/administration/HResources");
 const Finance = require("../../Models/administration/Finance");
 const Manager = require("../../Models/administration/Manager");
 const Support = require("../../Models/administration/Support");
-const Carer = require("../../Models/administration/carer");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -194,7 +193,7 @@ exports.updateSupportPasswords = async (req, res) => {
 
         const existingSupport = await Support.findOne({ _id: supportId });
         if (!existingSupport) {
-            return res.status(404).json({ error: "Manager does not exist" });
+            return res.status(404).json({ error: "Support does not exist" });
         }
 
         const password = req.body.password;

@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
-const carerSchema = new mongoose.Schema({
+const EndUserSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -29,11 +29,7 @@ const carerSchema = new mongoose.Schema({
   address: {
     type: String,
   },
-  role: {
-    type: String,
-    default: "carer",
-  },
-  geoLocation: {
+  geolocation: {
     type: String,
   },
   languageSpoken: {
@@ -69,12 +65,20 @@ const carerSchema = new mongoose.Schema({
   maidenName: {
     type: String,
   },
+  isNDIC: {
+    type: String,
+    enum: ["yes", "no"],
+  },
+  isReferred: {
+    type: String,
+    enum: ["yes", "no"],
+  },
   preferredName: {
     type: String,
   },
 });
 
-carerSchema.pre("save", async function (next) {
+EndUserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
@@ -82,5 +86,5 @@ carerSchema.pre("save", async function (next) {
   next();
 });
 
-const Carer = mongoose.model("carer", carerSchema);
-module.exports = Carer;
+const EndUsers = mongoose.model("endusers", EndUserSchema);
+module.exports = EndUsers;

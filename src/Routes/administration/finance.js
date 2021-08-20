@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { ensureFinance } = require("../../middlewares/auth");
+const { ensureFinance } = require("../../middlewares/commonAuth");
 
 
 const {financeLogin} = require("../../Controllers/administration/subOrdinateslogin");

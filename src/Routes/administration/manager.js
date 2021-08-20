@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { ensureManager } = require("../../middlewares/auth");
+const { ensureManager } = require("../../middlewares/commonAuth");
 
 const {managerLogin} = require("../../Controllers/administration/subOrdinateslogin");
 

@@ -2,7 +2,6 @@ const HResources = require("../../Models/administration/HResources");
 const Finance = require("../../Models/administration/Finance");
 const Manager = require("../../Models/administration/Manager");
 const Support = require("../../Models/administration/Support");
-const Carer = require("../../Models/administration/carer");
 
 
 exports.deleteHrAccount = async (req, res) => {
