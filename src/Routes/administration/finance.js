@@ -2,20 +2,17 @@ const express = require("express");
 const router = express.Router();
 const { ensureFinance } = require("../../middlewares/auth");
 
-const {
-  createFinance,
-  financeLogin,
-  updateFinanceDetails,
-  updateFinancePasswords,
-  deleteFinanceAccount,
-  financeDetails,
-} = require("../../Controllers/administration/finance");
 
-/**
- * @description create a new finance
- * @method POST /register
- * **/
-router.post("/register", createFinance);
+const {financeLogin} = require("../../Controllers/administration/subOrdinateslogin");
+
+const {financeDetails} = require("../../Controllers/administration/subOrdinatesdetails");
+
+
+const {
+  viewSupports,
+} = require("../../Controllers/administration/viewSubordinates");
+
+
 
 /**
  * @description  finance login
@@ -29,27 +26,6 @@ router.post("/login", financeLogin);
  * **/
 router.get("/view", ensureFinance, financeDetails);
 
-/**
- * @description  update finance details
- * @method POST /update/details/:financeId
- * **/
-router.post("/update/details/:financeId", ensureFinance, updateFinanceDetails);
-
-/**
- * @description  update finance passwords
- * @method POST /update/passwords/:financeId
- * **/
-router.post(
-  "/update/passwords/:financeId",
-  ensureFinance,
-  updateFinancePasswords
-);
-
-/**
- * @description  delete finance account
- * @method GET /account/delete/:financeId
- * **/
-router.get("/account/delete/:financeId", ensureFinance, deleteFinanceAccount);
 
 /**
  * @description  to view all the supports
