@@ -8,7 +8,7 @@ const EndUserSchema = mongoose.Schema({
   phone: { type: String, required: true },
   gender: { type: String, required: true, enum: ["male", "female", "other"] },
   DOB: { type: Date },
-  address: { type: String },
+  address: { type: String,default:"not provided" },
   geolocation: { type: String },
   languageSpoken: { type: String },
   emergencyContactName: { type: String },
@@ -22,7 +22,7 @@ const EndUserSchema = mongoose.Schema({
   taxFileNumber: { type: String },
   maidenName: { type: String },
   isNDIC: { type: String, enum: ["yes", "no"] },
-  isReferred: { type: String, enum: ["yes", "no"] },
+  isReferred: { type: String, default:"no" ,enum: ["yes", "no"] },
   preferredName: { type: String },
 });
 

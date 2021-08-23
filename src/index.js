@@ -13,6 +13,7 @@ const staffPasswordRoutes = require("./Routes/administration/changePassword");
 const staffDeleteRoutes = require("./Routes/administration/deleteStaff");
 const staffViewRoutes = require("./Routes/administration/viewStaffs");
 const staffProfileRoutes = require("./Routes/administration/viewProfile");
+const User = require("./Routes/User/EndUser");
 const connectDB = require("./Database/database");
 
 // env config
@@ -44,6 +45,8 @@ app.use("/api/update/password", staffPasswordRoutes);
 app.use("/api/account/delete", staffDeleteRoutes);
 app.use("/api/staff/view", staffViewRoutes);
 app.use("/api/staff/profile", staffProfileRoutes);
+app.use("/api/user",User);
+
 
 const PORT = process.env.PORT || 5000;
 

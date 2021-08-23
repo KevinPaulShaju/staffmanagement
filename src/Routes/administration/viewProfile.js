@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+
+const {viewCarerDocs} = require("../../Controllers/administration/carerdoc");
+
+
 const {
   hrDetails,
   financeDetails,
@@ -24,5 +28,7 @@ router.get("manager/view/:managerId", ensureManager, managerDetails);
 router.get("finance/view/:financeId", ensureFinance, financeDetails);
 router.get("support/view/:supportId", ensureSupport, supportDetails);
 router.get("carer/view/:carerId", ensureCarer, carerDetails);
+
+router.get("/carer/document/:carerId", ensureCarer , viewCarerDocs);
 
 module.exports = router;

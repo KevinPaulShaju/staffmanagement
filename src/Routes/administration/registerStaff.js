@@ -3,7 +3,12 @@ const router = express.Router();
 
 const { managementAuth } = require("../../middlewares/manageStaffAuth");
 
-const { ensureAdmin } = require("../../middlewares/commonAuth");
+const {
+  ensureAdmin,
+  ensureCarer
+} = require("../../middlewares/commonAuth");
+
+const {createCarerDoc} = require("../../Controllers/administration/carerdoc");
 
 const {
   createHr,
@@ -27,5 +32,7 @@ router.post("/finance", managementAuth, createFinance);
 router.post("/support", managementAuth, createSupport);
 
 router.post("/carer", managementAuth, registerCarer);
+
+router.post("/carer/insert/document/:carerId", ensureCarer ,createCarerDoc);
 
 module.exports = router;

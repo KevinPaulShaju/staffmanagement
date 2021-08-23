@@ -23,6 +23,6 @@ router.post("/finance/:financeId", managementAuth, updateFinancePasswords);
 
 router.post("/support/:supportId", managementAuth, updateSupportPasswords);
 
-router.post("/support/:carerId", managementAuth, updateCarerPasswords);
+router.post("/carer/:carerId", managementAuth, updateCarerPasswords);
 
 module.exports = router;
