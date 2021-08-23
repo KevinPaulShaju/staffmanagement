@@ -1,11 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const {
-  userValidation,
-  updateValidation,
-  passwordValidation,
-} = require("../../Services/validation");
+const { userValidation } = require("../../Services/validation");
 
 const HResources = require("../../Models/administration/HResources");
 const Finance = require("../../Models/administration/Finance");
@@ -146,5 +142,64 @@ exports.createSupport = async (req, res) => {
       .json({ message: `Support staff has been successfully registered.` });
   } catch (error) {
     return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.registerCarer = async (req, res) => {
+  const {
+    name,
+    email,
+    password,
+    password2,
+    phone,
+    gender,
+    DOB,
+    address,
+    role,
+    location,
+    languageSpoken,
+    emergencyContactName,
+    emergencyContactNumber,
+    emergencyContactRelationship,
+    emergencyContactAddress,
+    secondaryContactName,
+    secondaryContactNumber,
+    secondaryContactRelationship,
+    secondaryContactAddress,
+    taxFileNumber,
+    maidenName,
+    preferredName,
+  } = req.body;
+
+  if (!name || !email || !password || !password2 || !phone || !gender) {
+    return res.status(400).json({
+      error:
+        "name, email, password, password2, phone & gender all fields are required",
+    });
+  }
+
+  const { error } = userValidation(req.body);
+  if (error) {
+    return res.status(406).json({ error: error.details[0].message });
+  }
+
+  try {
+    const existingCarer = await Carer.findOne({ email: email });
+    if (existingCarer) {
+      return res.status(406).json({ error: "This Carer already exists." });
+    }
+
+    // confirming passwords
+    if (password !== password2) {
+      return res.status(406).json({ error: "Passwords do not match." });
+    }
+
+    const newCarer = new Carer(req.body);
+    const savedCarer = await newCarer.save();
+    res
+      .status(200)
+      .json({ message: `Carer staff has been successfully registered.` });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
 };

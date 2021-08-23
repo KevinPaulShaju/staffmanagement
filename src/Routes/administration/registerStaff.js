@@ -1,11 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {
-  manageFinance,
-  manageSupport,
-  manageCarer,
-} = require("../../middlewares/manageStaffAuth");
+const { managementAuth } = require("../../middlewares/manageStaffAuth");
 
 const { ensureAdmin } = require("../../middlewares/commonAuth");
 
@@ -14,8 +10,8 @@ const {
   createManager,
   createFinance,
   createSupport,
+  registerCarer,
 } = require("../../Controllers/administration/createSubordinates");
-const { registerCarer } = require("../../Controllers/administration/carer");
 
 /**
  * @description  register staffs
@@ -26,10 +22,10 @@ router.post("/hr", ensureAdmin, createHr);
 
 router.post("/manager", ensureAdmin, createManager);
 
-router.post("/finance", manageFinance, createFinance);
+router.post("/finance", managementAuth, createFinance);
 
-router.post("/support", manageSupport, createSupport);
+router.post("/support", managementAuth, createSupport);
 
-router.post("/carer", manageCarer, registerCarer);
+router.post("/carer", managementAuth, registerCarer);
 
 module.exports = router;

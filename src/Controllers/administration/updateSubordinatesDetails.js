@@ -2,12 +2,9 @@ const HResources = require("../../Models/administration/HResources");
 const Finance = require("../../Models/administration/Finance");
 const Manager = require("../../Models/administration/Manager");
 const Support = require("../../Models/administration/Support");
+const Carer = require("../../Models/administration/carer");
 
-const {
-  userValidation,
-  updateValidation,
-  passwordValidation,
-} = require("../../Services/validation");
+const { updateValidation } = require("../../Services/validation");
 
 exports.updateHrDetails = async (req, res) => {
   const hrId = req.params.hrId;
@@ -170,6 +167,35 @@ exports.updateSupportDetails = async (req, res) => {
     }
 
     const updatedSupport = await Support.updateOne({ _id: supportId }, query);
+    res.status(200).json({ message: "Update Successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// update carer details
+exports.updateCarerDetails = async (req, res) => {
+  const carerId = req.params.carerId;
+  const { error } = updateValidation(req.body);
+  if (error) {
+    return res.status(406).json({ error: error.details[0].message });
+  }
+  const updates = Object.keys(req.body);
+
+  try {
+    const existingCarer = await Carer.findOne({ _id: carerId });
+    if (!existingCarer) {
+      return res.status(404).json({ error: "carer does not exist" });
+    }
+
+    //   query
+    let query = { $set: {} };
+    for (let key in req.body) {
+      if (existingCarer[key] && existingCarer[key] !== req.body[key])
+        // if the field we have in req.body exists, we're gonna update it
+        query.$set[key] = req.body[key];
+    }
+    const updatedCarer = await Carer.updateOne({ _id: carerId }, query);
     res.status(200).json({ message: "Update Successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });

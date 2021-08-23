@@ -5,8 +5,8 @@ const {
   managerLogin,
   financeLogin,
   supportLogin,
+  carerLogin,
 } = require("../../Controllers/administration/subOrdinateslogin");
-const { carerLogin } = require("../../Controllers/administration/carer");
 
 /**
  * @description   staffs login

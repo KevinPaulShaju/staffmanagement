@@ -5,18 +5,24 @@ const {
   financeDetails,
   managerDetails,
   supportDetails,
+  carerDetails,
 } = require("../../Controllers/administration/subOrdinatesdetails");
-
-const { carerDetails } = require("../../Controllers/administration/carer");
+const {
+  ensureHr,
+  ensureManager,
+  ensureFinance,
+  ensureSupport,
+  ensureCarer,
+} = require("../../middlewares/commonAuth");
 
 /**
  * @description  view staff profile
  * @method GET staff/view
  * **/
-router.get("hr/view/:hrId", hrDetails);
-router.get("manager/view/:managerId", managerDetails);
-router.get("finance/view/:financeId", financeDetails);
-router.get("support/view/:supportId", supportDetails);
-router.get("carer/view/:carerId", carerDetails);
+router.get("hr/view/:hrId", ensureHr, hrDetails);
+router.get("manager/view/:managerId", ensureManager, managerDetails);
+router.get("finance/view/:financeId", ensureFinance, financeDetails);
+router.get("support/view/:supportId", ensureSupport, supportDetails);
+router.get("carer/view/:carerId", ensureCarer, carerDetails);
 
 module.exports = router;

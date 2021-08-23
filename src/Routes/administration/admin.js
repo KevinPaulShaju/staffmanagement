@@ -91,9 +91,9 @@ router.post("/register/hr", createHr);
 
 router.post("/register/manager", createManager);
 
-router.post("/register/finance", manageFinance, createFinance);
+router.post("/register/finance", createFinance);
 
-router.post("/register/support", manageSupport, createSupport);
+router.post("/register/support", createSupport);
 
 // To Update sub-Ordinate Details
 

@@ -5,13 +5,10 @@ const {
   updateManagerDetails,
   updateFinanceDetails,
   updateSupportDetails,
+  updateCarerDetails,
 } = require("../../Controllers/administration/updateSubordinatesDetails");
 
-const {
-  manageFinance,
-  manageSupport,
-  manageCarer,
-} = require("../../middlewares/manageStaffAuth");
+const { managementAuth } = require("../../middlewares/manageStaffAuth");
 const { ensureAdmin } = require("../../middlewares/commonAuth");
 
 /**
@@ -20,7 +17,8 @@ const { ensureAdmin } = require("../../middlewares/commonAuth");
  * **/
 router.post("/hr/:hrId", ensureAdmin, updateHrDetails);
 router.post("/manager/:managerId", ensureAdmin, updateManagerDetails);
-router.post("/finance/:financeId", manageFinance, updateFinanceDetails);
-router.post("/support/:supportId", manageSupport, updateSupportDetails);
+router.post("/finance/:financeId", managementAuth, updateFinanceDetails);
+router.post("/support/:supportId", managementAuth, updateSupportDetails);
+router.post("/support/:carerId", managementAuth, updateCarerDetails);
 
 module.exports = router;

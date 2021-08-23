@@ -11,6 +11,7 @@ const HResources = require("../../Models/administration/HResources");
 const Finance = require("../../Models/administration/Finance");
 const Manager = require("../../Models/administration/Manager");
 const Support = require("../../Models/administration/Support");
+const Carer = require("../../Models/administration/carer");
 
 exports.hrLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -142,6 +143,39 @@ exports.supportLogin = async (req, res) => {
     // jwt authorization
     const key = process.env.JWT_SECRET;
     userId = existingSupport._id;
+    const accessToken = jwt.sign(userId.toString(), key);
+    console.log(accessToken);
+    res.status(200).json({ accessToken: accessToken });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.carerLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res
+      .status(406)
+      .json({ error: "Both Email & Password must be provided" });
+  }
+
+  try {
+    // checking if the user exists
+    const existingCarer = await Carer.findOne({ email: email });
+    if (!existingCarer) {
+      return res.status(404).json({ error: "Carer does not exist." });
+    }
+
+    //   match password
+    const match = await bcrypt.compare(password, existingCarer.password);
+    if (!match) {
+      return res.status(401).json({ error: "Invalid Credentials" });
+    }
+
+    // jwt authorization
+    const key = process.env.JWT_SECRET;
+    userId = existingCarer._id;
     const accessToken = jwt.sign(userId.toString(), key);
     console.log(accessToken);
     res.status(200).json({ accessToken: accessToken });

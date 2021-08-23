@@ -2,6 +2,7 @@ const HResources = require("../../Models/administration/HResources");
 const Finance = require("../../Models/administration/Finance");
 const Manager = require("../../Models/administration/Manager");
 const Support = require("../../Models/administration/Support");
+const Carer = require("../../Models/administration/carer");
 
 exports.hrDetails = async (req, res) => {
   try {
@@ -51,6 +52,21 @@ exports.supportDetails = async (req, res) => {
       return res.status(404).json({ error: "Admin not found" });
     }
     res.status(200).json({ message: findSupport });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+// add controller to show carer profile
+
+exports.carerDetails = async (req, res) => {
+  try {
+    const _id = req.user.id;
+    const findCarer = await Carer.findOne({ _id }).select("-password");
+    if (!findCarer) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    res.status(200).json({ message: findCarer });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

@@ -1,22 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const { ensureAdmin } = require("../../middlewares/commonAuth");
-const {
-  manageFinance,
-  manageSupport,
-  manageCarer,
-} = require("../../middlewares/manageStaffAuth");
+const { managementAuth } = require("../../middlewares/manageStaffAuth");
 
 const {
   updateHrPasswords,
   updateManagerPasswords,
   updateSupportPasswords,
   updateFinancePasswords,
-} = require("../../Controllers/administration/updateSubordinatepassword");
-
-const {
   updateCarerPasswords,
-} = require("../../Controllers/administration/carer");
+} = require("../../Controllers/administration/updateSubordinatepassword");
 
 /**
  * @description  update hr passwords
@@ -26,10 +19,10 @@ router.post("/hr/:hrId", ensureAdmin, updateHrPasswords);
 
 router.post("/manager/:managerId", ensureAdmin, updateManagerPasswords);
 
-router.post("/finance/:financeId", manageFinance, updateFinancePasswords);
+router.post("/finance/:financeId", managementAuth, updateFinancePasswords);
 
-router.post("/support/:supportId", manageSupport, updateSupportPasswords);
+router.post("/support/:supportId", managementAuth, updateSupportPasswords);
 
-router.post("/support/:carerId", manageCarer, updateCarerPasswords);
+router.post("/support/:carerId", managementAuth, updateCarerPasswords);
 
 module.exports = router;
