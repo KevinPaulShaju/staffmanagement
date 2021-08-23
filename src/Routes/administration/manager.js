@@ -1,54 +1,45 @@
 const express = require("express");
 const router = express.Router();
-const { ensureManager } = require("../../middlewares/auth");
+const { ensureManager } = require("../../middlewares/commonAuth");
+
+const {managerLogin} = require("../../Controllers/administration/subOrdinateslogin");
+
+const {managerDetails} = require("../../Controllers/administration/subOrdinatesdetails");
+
+
 
 const {
-  createManager,
-  managerLogin,
-  updateManagerDetails,
-  updateManagerPasswords,
-  deleteManagerAccount,
-  managerDetails
-} = require("../../Controllers/administration/manager");
+  viewFinance,
+  viewManagers,
+  viewSupports,
+} = require("../../Controllers/administration/viewSubordinates");
 
-/**
- * @description create a new manager
- * @method POST /register
- * **/
 
-router.post("/register", createManager);
+
 
 /**
  * @description  manager login
  * @method POST /login
  * **/
-
 router.post("/login", managerLogin);
 
-
-// To View profile
+/**
+ * @description  view manager profile
+ * @method GET /view
+ * **/
 router.get("/view", ensureManager, managerDetails);
 
 
 /**
- * @description  update manager details
- * @method POST /update
+ * @description  to view all the finance
+ * @method GET /view/finance
  * **/
-
-router.post("/update/details/:managerId", ensureManager, updateManagerDetails);
+router.get("/view/finance", ensureManager, viewFinance);
 
 /**
- * @description  update manager passwords
- * @method POST /update
+ * @description  to view all the supports
+ * @method GET /view/supports
  * **/
-
-router.post("/update/passwords/:managerId",ensureManager,updateManagerPasswords);
-
-/**
- * @description  delete manager account
- * @method GET /update
- * **/
-
-router.get("/account/delete/:managerId", ensureManager, deleteManagerAccount);
+router.get("/view/supports", ensureManager, viewSupports);
 
 module.exports = router;

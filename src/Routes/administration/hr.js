@@ -1,53 +1,43 @@
 const express = require("express");
 const router = express.Router();
-const { ensureHr } = require("../../middlewares/auth");
+const { ensureHr } = require("../../middlewares/commonAuth");
 
 const {
-  createHr,
+  hrDetails,
+} = require("../../Controllers/administration/subOrdinatesdetails");
+
+const {
   hrLogin,
-  updateHrDetails,
-  updateHrPasswords,
-  deleteHrAccount,
-  hrDetails
-} = require("../../Controllers/administration/hr");
+} = require("../../Controllers/administration/subOrdinateslogin");
 
-/**
- * @description create a new hr
- * @method POST /register
- * **/
-
-router.post("/register", createHr);
+const {
+  viewFinance,
+  viewManagers,
+  viewSupports,
+} = require("../../Controllers/administration/viewSubordinates");
 
 /**
  * @description  hr login
  * @method POST /login
  * **/
-
 router.post("/login", hrLogin);
 
 /**
- * @description  update hr details
- * @method POST /update
+ * @description  view hr profile
+ * @method GET /view
  * **/
-
-// To View profile
-router.get("/view", ensureHr , hrDetails);
-
-router.post("/update/details/:hrId", ensureHr, updateHrDetails);
+router.get("/view", ensureHr, hrDetails);
 
 /**
- * @description  update hr passwords
- * @method POST /update
+ * @description  to view all the finance
+ * @method GET /view/finance
  * **/
-
-router.post("/update/passwords/:hrId", ensureHr, updateHrPasswords);
+router.get("/view/finance", ensureHr, viewFinance);
 
 /**
- * @description  delete hr account
- * @method GET /update
+ * @description  to view all the supports
+ * @method GET /view/supports
  * **/
-
-router.get("/account/delete/:hrId", ensureHr, deleteHrAccount);
-
+router.get("/view/supports", ensureHr, viewSupports);
 
 module.exports = router;

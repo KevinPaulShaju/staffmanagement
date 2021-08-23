@@ -1,58 +1,36 @@
 const express = require("express");
 const router = express.Router();
-const { ensureFinance } = require("../../middlewares/auth");
+const { ensureFinance } = require("../../middlewares/commonAuth");
+
+
+const {financeLogin} = require("../../Controllers/administration/subOrdinateslogin");
+
+const {financeDetails} = require("../../Controllers/administration/subOrdinatesdetails");
+
 
 const {
-  createFinance,
-  financeLogin,
-  updateFinanceDetails,
-  updateFinancePasswords,
-  deleteFinanceAccount,
-  financeDetails
-} = require("../../Controllers/administration/finance");
+  viewSupports,
+} = require("../../Controllers/administration/viewSubordinates");
 
-/**
- * @description create a new finance
- * @method POST /register
- * **/
 
-router.post("/register", createFinance);
 
 /**
  * @description  finance login
  * @method POST /login
  * **/
-
 router.post("/login", financeLogin);
 
 /**
- * @description  update finance details
- * @method POST /update
+ * @description  view finance profile
+ * @method GET /view
  * **/
+router.get("/view", ensureFinance, financeDetails);
 
-
-
-router.get("/view", ensureFinance ,financeDetails);
-
-
-router.post("/update/details/:financeId", ensureFinance, updateFinanceDetails);
 
 /**
- * @description  update finance passwords
- * @method POST /update
+ * @description  to view all the supports
+ * @method GET /view/supports
  * **/
-
-router.post(
-  "/update/passwords/:financeId",
-  ensureFinance,
-  updateFinancePasswords
-);
-
-/**
- * @description  delete finance account
- * @method GET /update
- * **/
-
-router.get("/account/delete/:financeId", ensureFinance, deleteFinanceAccount);
+router.get("/view/supports", ensureFinance, viewSupports);
 
 module.exports = router;
