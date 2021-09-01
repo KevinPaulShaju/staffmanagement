@@ -4,7 +4,7 @@ const {
   passwordValidation,
 } = require("../../services/staffValidation");
 const Admin = require("../../models/administration/admin");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 //Create admin

@@ -5,6 +5,7 @@ const connectDB = require("./database/database");
 const adminRoutes = require("./routes/administration/admin");
 const staffRoutes = require("./routes/administration/manageStaffs");
 const carerRoutes = require("./routes/administration/carer");
+const endUser = require("./routes/user/EndUser");
 
 // env config
 dotenv.config({ path: "config/config.env" });
@@ -25,6 +26,8 @@ app.use("/api/staff", staffRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use("/api/carer",carerRoutes);
+
+app.use("/api/user",endUser);
 
 app.use('/profile',express.static('uploads/images'));
 
