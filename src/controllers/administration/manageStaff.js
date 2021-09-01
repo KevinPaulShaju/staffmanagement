@@ -4,7 +4,7 @@ const {
   passwordValidation,
 } = require("../../services/staffValidation");
 const Staff = require("../../models/administration/staff");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 //Create staff
@@ -24,7 +24,9 @@ exports.createStaff = async (req, res) => {
   try {
     const existingStaff = await Staff.findOne({ email: email, role: role });
     if (existingStaff) {
-      return res.status(406).json({ error: `This ${email} with this ${role} already exists.` });
+      return res
+        .status(406)
+        .json({ error: `This ${email} with this ${role} already exists.` });
     }
 
     // confirming passwords
@@ -52,6 +54,7 @@ exports.createStaff = async (req, res) => {
 // staff login
 exports.staffLogin = async (req, res) => {
   const { email, password } = req.body;
+  const role = req.query.role;
 
   if (!email || !password) {
     return res
@@ -61,7 +64,7 @@ exports.staffLogin = async (req, res) => {
 
   try {
     // checking if the user exists
-    const existingStaff = await Staff.findOne({ email: email });
+    const existingStaff = await Staff.findOne({ email: email, role: role });
     if (!existingStaff) {
       return res.status(404).json({ error: `${role} does not exist.` });
     }
