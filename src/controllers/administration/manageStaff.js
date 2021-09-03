@@ -4,6 +4,7 @@ const {
   passwordValidation,
 } = require("../../services/staffValidation");
 const Staff = require("../../models/administration/staff");
+const Roles = require("../../models/administration/Roles");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -43,6 +44,12 @@ exports.createStaff = async (req, res) => {
       password,
     });
     const savedStaff = await newStaff.save();
+
+    const newRoles = new Roles({
+      staffId: savedStaff._id,
+      onModel: "staff",
+    });
+    const savedRole = await newRoles.save();
     res.status(200).json({
       message: `${role} staff has been successfully registered.`,
     });

@@ -2,8 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 
-
 const Carer = require("../../models/administration/carer");
+const Roles = require("../../models/administration/Roles");
 
 const {
   updateValidation,
@@ -61,9 +61,16 @@ exports.registerCarer = async (req, res) => {
 
     const newCarer = new Carer(req.body);
     const savedCarer = await newCarer.save();
+
+    const newRoles = new Roles({
+      staffId: savedCarer._id,
+      onModel: "carer",
+    });
+    const savedRole = await newRoles.save();
+
     res.status(200).json({
       message: `Carer staff has been successfully registered.`,
-      result: savedCarer
+      result: savedCarer,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -103,9 +110,6 @@ exports.carerLogin = async (req, res) => {
   }
 };
 
-
-
-
 // update carer details
 exports.updateCarerDetails = async (req, res) => {
   const carerId = req.params.carerId;
@@ -122,7 +126,7 @@ exports.updateCarerDetails = async (req, res) => {
     }
 
     //   query
-    let query = { $set: { } };
+    let query = { $set: {} };
     for (let key in req.body) {
       if (existingCarer[key] && existingCarer[key] !== req.body[key])
         query.$set[key] = req.body[key];
@@ -171,7 +175,7 @@ exports.updateCarerPasswords = async (req, res) => {
     }
 
     //   query
-    let query = { $set: { } };
+    let query = { $set: {} };
     for (let key in req.body) {
       if (existingCarer[key] && existingCarer[key] !== req.body[key])
         query.$set[key] = req.body[key];
