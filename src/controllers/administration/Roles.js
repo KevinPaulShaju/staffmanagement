@@ -58,9 +58,8 @@ exports.changeRoles = async (req, res) => {
     await staffScheam.updateOne({ _id: staffId }, { $set: { role: "custom" } });
 
     const updatedRoles = await Roles.findOne({ staffId: staffId });
-    res
-      .status(200)
-      .json({ roles: updatedRoles, message: "Roles updated Successfully" });
+    res.status(200).json({ roles: updatedRoles, message: "Roles updated Successfully" });
+    
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
