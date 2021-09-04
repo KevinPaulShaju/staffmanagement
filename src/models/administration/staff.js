@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
+const Roles = require("./Roles");
 
 const StaffSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -16,6 +17,14 @@ StaffSchema.pre("save", async function (next) {
   const user = this;
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 10);
+  }
+  next();
+});
+
+StaffSchema.pre("remove", async function (next) {
+  const role = await Roles.findOne({ staffId: this.id });
+  if (role) {
+    await role.remove();
   }
   next();
 });

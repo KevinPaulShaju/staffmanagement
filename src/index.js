@@ -6,6 +6,7 @@ const adminRoutes = require("./routes/administration/admin");
 const staffRoutes = require("./routes/administration/manageStaffs");
 const carerRoutes = require("./routes/administration/carer");
 const endUser = require("./routes/user/EndUser");
+const serviceRoute = require("./routes/administration/services");
 
 // env config
 dotenv.config({ path: "config/config.env" });
@@ -31,6 +32,7 @@ app.use("/api/user",endUser);
 
 app.use('/profile',express.static('uploads/images'));
 
+app.use("/api",serviceRoute);
 
 const PORT = process.env.PORT || 5000;
 

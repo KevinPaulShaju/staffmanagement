@@ -9,6 +9,7 @@ const {
   viewStaff,
   staffProfile,
 } = require("../../controllers/administration/manageStaff");
+const { changeRoles } = require("../../controllers/administration/Roles");
 
 const { authenticateUser } = require("../../middlewares/auth");
 
@@ -71,5 +72,13 @@ router.get("/view/staffs", authenticateUser, viewStaff);
  **/
 
 router.get("/view/staff/:staffId", staffProfile);
+
+/**
+ * @description edit staff roles
+ * @method POST
+ * @route /staff/roles/:staffId?role=role
+ **/
+
+router.post("/roles/:staffId", changeRoles);
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
-// const CarerDoc = require("./CarerDoc");
+const Roles = require("./Roles");
+const CarerDoc = require("./CarerDoc");
 
 const carerSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -13,7 +14,7 @@ const carerSchema = new mongoose.Schema({
   address: { type: String },
   role: { type: String, default: "carer" },
   geoLocation: {
-    type: { type: String, enum: ["Point"]},
+    type: { type: String, enum: ["Point"] },
     coordinates: { type: [Number] },
   },
   languageSpoken: [String],
@@ -38,10 +39,21 @@ carerSchema.pre("save", async function (next) {
   next();
 });
 
-// carerSchema.pre("remove", async function (next) {
-//   await CarerDoc.deleteMany({ carerId: this._id });
-//   next();
-// });
+carerSchema.pre("remove", async function (next) {
+  const doc = await CarerDoc.findOne({ carerId: this._id });
+  if (doc) {
+    await doc.remove();
+  }
+  next();
+});
+
+carerSchema.pre("remove", async function (next) {
+  const role = await Roles.findOne({ staffId: this.id });
+  if (role) {
+    await role.remove();
+  }
+  next();
+});
 
 const Carer = mongoose.model("carer", carerSchema);
 module.exports = Carer;
