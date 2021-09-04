@@ -1,33 +1,37 @@
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
+const UserReport = require("../../models/user/reportuser");
 
-const EndUserSchema = mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-  phone: { type: String, required: true },
-  photo: { type: String,default:null},
-  gender: { type: String, required: true, enum: ["male", "female", "other"] },
-  DOB: { type: Date, default:Date.now() },
-  address: { type: String, default: "not provided" },
-  geolocation: { type: String },
-  languageSpoken: { type: String },
-  emergencyContactName: { type: String },
-  emergencyContactNumber: { type: String },
-  emergencyContactRelationship: { type: String },
-  emergencyContactAddress: { type: String },
-  secondaryContactName: { type: String },
-  secondaryContactNumber: { type: String },
-  secondaryContactRelationship: { type: String },
-  secondaryContactAddress: { type: String },
-  taxFileNumber: { type: String },
-  maidenName: { type: String },
-  isNDIC: { type: String, enum: ["yes", "no"] },
-  isReferred: { type: String, default: "no", enum: ["yes", "no"] },
-  preferredName: { type: String },
-},{
-  timestamps: true
-});
+const EndUserSchema = mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    phone: { type: String, required: true },
+    photo: { type: String, default: null },
+    gender: { type: String, required: true, enum: ["male", "female", "other"] },
+    DOB: { type: Date, default: Date.now() },
+    address: { type: String, default: "not provided" },
+    geolocation: { type: String },
+    languageSpoken: { type: String },
+    emergencyContactName: { type: String },
+    emergencyContactNumber: { type: String },
+    emergencyContactRelationship: { type: String },
+    emergencyContactAddress: { type: String },
+    secondaryContactName: { type: String },
+    secondaryContactNumber: { type: String },
+    secondaryContactRelationship: { type: String },
+    secondaryContactAddress: { type: String },
+    taxFileNumber: { type: String },
+    maidenName: { type: String },
+    isNDIC: { type: String, enum: ["yes", "no"] },
+    isReferred: { type: String, default: "no", enum: ["yes", "no"] },
+    preferredName: { type: String },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 EndUserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
@@ -38,7 +42,10 @@ EndUserSchema.pre("save", async function (next) {
 });
 
 EndUserSchema.pre("remove", async function (next) {
-  await UserReport.deleteMany({ endUserId: this._id });
+  const userReports = await UserReport.find({ endUserId: this._id });
+  if (userReports || userReports.length !== 0) {
+    await UserReport.deleteMany({ endUserId: this._id });
+  }
   next();
 });
 

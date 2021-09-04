@@ -26,13 +26,13 @@ app.use("/api/staff", staffRoutes);
 
 app.use("/api/admin", adminRoutes);
 
-app.use("/api/carer",carerRoutes);
+app.use("/api/carer", carerRoutes);
 
-app.use("/api/user",endUser);
+app.use("/api/user", endUser);
 
-app.use('/profile',express.static('uploads/images'));
+app.use("/profile", express.static("uploads/images"));
 
-app.use("/api",serviceRoute);
+app.use("/api/service", serviceRoute);
 
 const PORT = process.env.PORT || 5000;
 
