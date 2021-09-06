@@ -6,6 +6,7 @@ const adminRoutes = require("./routes/administration/admin");
 const staffRoutes = require("./routes/administration/manageStaffs");
 const carerRoutes = require("./routes/administration/carer");
 const endUser = require("./routes/user/EndUser");
+const reportRoutes = require("./routes/user/reports");
 const serviceRoute = require("./routes/administration/services");
 
 // env config
@@ -30,9 +31,11 @@ app.use("/api/carer", carerRoutes);
 
 app.use("/api/user", endUser);
 
-app.use("/profile", express.static("uploads/images"));
-
 app.use("/api/service", serviceRoute);
+
+app.use("/api/report", reportRoutes);
+
+app.use("/profile", express.static("uploads/images"));
 
 const PORT = process.env.PORT || 5000;
 

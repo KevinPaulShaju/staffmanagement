@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const UserReportSchema = mongoose.Schema({
+const UserReportSchema = new mongoose.Schema({
   endUserId: { type: Schema.Types.ObjectId, required: true, ref: "endusers" },
   carerId: { type: Schema.Types.ObjectId, required: true, ref: "carer" },
   report: { type: String, required: true },

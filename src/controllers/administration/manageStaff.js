@@ -71,7 +71,7 @@ exports.staffLogin = async (req, res) => {
 
   try {
     // checking if the user exists
-    const existingStaff = await Staff.findOne({ email: email, role: role });
+    const existingStaff = await Staff.findOne({ email: email });
     if (!existingStaff) {
       return res.status(404).json({ error: `${role} does not exist.` });
     }
@@ -97,8 +97,8 @@ exports.staffLogin = async (req, res) => {
 
 // update staff details
 exports.updateStaffDetails = async (req, res) => {
-  const role = req.query.role;
-  console.log(role);
+  // const role = req.query.role;
+  // console.log(role);
   const staffId = req.params.staffId;
   const { error } = updateValidation(req.body);
   if (error) {

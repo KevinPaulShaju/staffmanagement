@@ -7,7 +7,7 @@ const authentication = {
     const role = req.query.role;
     const authHeader = req.headers["authorization"];
     if (!role) {
-      return res.status(401).json({ error: "Unrecognized satff role" });
+      return res.status(401).json({ error: "Unrecognized staff role" });
     }
     const token = authHeader && authHeader.split(" ")[1];
     if (token === null) {
@@ -69,7 +69,7 @@ const authentication = {
         return res.status(401).json({ error: "Unauthorized entry" });
       }
       req.token = token;
-      req.user = user;
+      req.user = admin;
       next();
     } catch (error) {
       return res.status(401).json({ error: error.message });

@@ -36,7 +36,7 @@ router.post("/update/password/:userId", changePassword);
  * @method POST
  * @route  /delete/:userId
  */
-router.post("/delete/:userId", deleteuser);
+router.get("/delete/:userId", deleteuser);
 
 // view users profile
 router.get("/view/profile/:userId", viewUserProfile);

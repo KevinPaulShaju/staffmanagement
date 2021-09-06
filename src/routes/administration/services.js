@@ -14,7 +14,7 @@ const {
  * @route /insert/service/
  **/
 
-router.post("/insert", insertToServices);
+router.post("/add", insertToServices);
 
 /**
  * @description to see all the services

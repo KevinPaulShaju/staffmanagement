@@ -11,31 +11,33 @@ const {
   updateCarerPasswords,
   carerDetails,
   deleteCarerAccount,
+  viewAllCarers,
 } = require("../../controllers/administration/carer");
 
 const {
   authenticateUser,
-  carerAuthentication,authenticateAdmin
+  carerAuthentication,
+  authenticateAdmin,
 } = require("../../middlewares/auth");
 
 /**
- * @description create admin accounts
+ * @description create carer accounts
  * @method POST
- * @route /admin/register
+ * @route /carer/register
  **/
 
 router.post("/register", carerAuthentication, registerCarer);
 
 /**
- * @description admin login
+ * @description carer login
  * @method POST
- * @route /admin/login
+ * @route /carer/login
  **/
 
 router.post("/login", carerLogin);
 
 /**
- * @description update admin details
+ * @description update carer details
  * @method POST
  * @route /update/details/:carerId
  **/
@@ -47,7 +49,7 @@ router.post(
 );
 
 /**
- * @description update admin password
+ * @description update carer password
  * @method POST
  * @route /update/password/:carerId
  **/
@@ -59,7 +61,7 @@ router.post(
 );
 
 /**
- * @description view admin profile
+ * @description view carer profile
  * @method GET
  * @route /view/profile/:carerId
  **/
@@ -67,7 +69,15 @@ router.post(
 router.get("/view/profile/:carerId", carerDetails);
 
 /**
- * @description delete admin account
+ * @description view all carers
+ * @method GET
+ * @route /view/all
+ **/
+
+router.get("/view/all", viewAllCarers);
+
+/**
+ * @description delete carer account
  * @method GET
  * @route /update/password/:carerId
  **/

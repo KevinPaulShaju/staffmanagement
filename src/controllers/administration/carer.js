@@ -233,3 +233,15 @@ exports.deleteCarerAccount = async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 };
+
+exports.viewAllCarers = async (req, res) => {
+  try {
+    const carers = await Carer.find();
+    if (!carers || carers.length === 0) {
+      return res.status(404).json({ error: "No carers found" });
+    }
+    res.status(200).json({ carers: carers });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
