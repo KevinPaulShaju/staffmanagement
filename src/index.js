@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
+const cors = require("cors");
 const connectDB = require("./database/database");
 const adminRoutes = require("./routes/administration/admin");
 const staffRoutes = require("./routes/administration/manageStaffs");
@@ -11,6 +12,9 @@ const serviceRoute = require("./routes/administration/services");
 
 // env config
 dotenv.config({ path: "config/config.env" });
+
+// cors
+app.use(cors());
 
 // body parsing
 app.use(express.json());

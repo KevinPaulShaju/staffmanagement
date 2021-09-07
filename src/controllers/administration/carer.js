@@ -88,7 +88,7 @@ exports.carerLogin = async (req, res) => {
 
   try {
     // checking if the user exists
-    const existingCarer = await Carer.findOne({ email: email });
+    let existingCarer = await Carer.findOne({ email: email });
     if (!existingCarer) {
       return res.status(404).json({ error: "Carer does not exist." });
     }
@@ -104,7 +104,8 @@ exports.carerLogin = async (req, res) => {
     userId = existingCarer._id;
     const accessToken = jwt.sign(userId.toString(), key);
     console.log(accessToken);
-    res.status(200).json({ accessToken: accessToken });
+    existingCarer.password = undefined;
+    res.status(200).json({ accessToken: accessToken, carer: existingCarer });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

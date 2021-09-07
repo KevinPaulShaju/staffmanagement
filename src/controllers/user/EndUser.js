@@ -71,9 +71,9 @@ exports.userLogin = async (req, res) => {
 
   try {
     // checking if the user exists
-    const existingUser = await User.findOne({ email: email });
+    let existingUser = await User.findOne({ email: email });
     if (!existingUser) {
-      return res.status(404).json({ error: "Carer does not exist." });
+      return res.status(404).json({ error: "User does not exist." });
     }
 
     //   match password
@@ -86,7 +86,8 @@ exports.userLogin = async (req, res) => {
     const key = process.env.JWT_SECRET;
     userId = existingUser._id;
     const accessToken = jwt.sign(userId.toString(), key);
-    res.status(200).json({ accessToken: accessToken });
+    existingUser.password = undefined;
+    res.status(200).json({ accessToken: accessToken, user: existingUser });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

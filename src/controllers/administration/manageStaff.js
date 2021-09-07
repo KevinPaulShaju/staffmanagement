@@ -71,7 +71,7 @@ exports.staffLogin = async (req, res) => {
 
   try {
     // checking if the user exists
-    const existingStaff = await Staff.findOne({ email: email });
+    let existingStaff = await Staff.findOne({ email: email });
     if (!existingStaff) {
       return res.status(404).json({ error: `${role} does not exist.` });
     }
@@ -89,7 +89,8 @@ exports.staffLogin = async (req, res) => {
     userId = existingStaff._id;
     const accessToken = jwt.sign(userId.toString(), key);
     console.log(accessToken);
-    res.status(200).json({ accessToken: accessToken });
+    existingStaff.password = undefined;
+    res.status(200).json({ accessToken: accessToken, staff: existingStaff });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

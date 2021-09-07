@@ -55,7 +55,7 @@ exports.adminLogin = async (req, res) => {
 
   try {
     // checking if the user exists
-    const existingAdmin = await Admin.findOne({ email: email });
+    let existingAdmin = await Admin.findOne({ email: email });
     if (!existingAdmin) {
       return res.status(404).json({ error: `admin does not exist.` });
     }
@@ -71,7 +71,8 @@ exports.adminLogin = async (req, res) => {
     userId = existingAdmin._id;
     const accessToken = jwt.sign(userId.toString(), key);
     console.log(accessToken);
-    res.status(200).json({ accessToken: accessToken });
+    existingAdmin.password = undefined;
+    res.status(200).json({ accessToken: accessToken, admin: existingAdmin });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
