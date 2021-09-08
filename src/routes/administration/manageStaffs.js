@@ -8,10 +8,14 @@ const {
   deletestaffAccount,
   viewStaff,
   staffProfile,
+  viewAllStaffs,
 } = require("../../controllers/administration/manageStaff");
 const { changeRoles } = require("../../controllers/administration/Roles");
 
-const { authenticateUser } = require("../../middlewares/auth");
+const {
+  authenticateUser,
+  authenticateAdmin,
+} = require("../../middlewares/auth");
 
 /**
  * @description create staff accounts
@@ -64,6 +68,14 @@ router.get("/delete/account/:staffId", authenticateUser, deletestaffAccount);
  **/
 
 router.get("/view/staffs", authenticateUser, viewStaff);
+
+/**
+ * @description view all
+ * @method GET
+ * @route /view/all
+ **/
+
+router.get("/view/staffs/all", authenticateAdmin, viewAllStaffs);
 
 /**
  * @description view staff profile

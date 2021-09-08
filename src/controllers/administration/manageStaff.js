@@ -221,6 +221,18 @@ exports.viewStaff = async (req, res) => {
   }
 };
 
+exports.viewAllStaffs = async (req, res) => {
+  try {
+    const allStaffs = await Staff.find().select("-password");
+    if (allStaffs.length === 0) {
+      return res.status(200).json({ message: "No Staff profile to view" });
+    }
+    res.status(200).json({ messages: allStaffs });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.staffProfile = async (req, res) => {
   const role = req.query.role;
   const staffId = req.params.staffId;
