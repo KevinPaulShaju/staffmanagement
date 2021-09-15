@@ -1,14 +1,35 @@
 const bcrypt = require("bcryptjs");
+const { date } = require("joi");
 const mongoose = require("mongoose");
-const Roles = require("./Roles");
+const Roles = require("./Permissions");
 
 const StaffSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String, required: true },
   gender: { type: String, required: true, enum: ["male", "female", "other"] },
+  photo: { type: String, default: null },
   role: { type: String, required: true },
   password: { type: String, required: true },
+  dateOfBirth: { type: Date, required: true },
+  address: { type: String, required: true },
+  geoLocation: {
+    type: { type: String, enum: ["Point"] },
+    coordinates: {
+      latitude: { type: Number, required: true },
+      longitude: { type: Number, required: true },
+    },
+  },
+  languageSpoken: { type: Array, required: true },
+  emergencyContactName: { type: String, required: true },
+  emergencyContactNumber: { type: String, required: true },
+  emergencyContactRelationship: { type: String, required: true },
+  emergencyContactAddress: { type: String, required: true },
+  position: { type: String, required: true },
+  preferedName: { type: String, required: true },
+  accountNumber: { type: Number, required: true },
+  bankId: { type: Number, required: true },
+  taxFileNumber: { type: Number, required: true },
 });
 
 //Hashing the Password

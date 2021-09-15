@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 
 const Carer = require("../../models/administration/carer");
-const Roles = require("../../models/administration/Roles");
+const Roles = require("../../models/administration/Permissions");
 
 const {
   updateValidation,

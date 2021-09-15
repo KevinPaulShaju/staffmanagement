@@ -10,7 +10,7 @@ const {
   staffProfile,
   viewAllStaffs,
 } = require("../../controllers/administration/manageStaff");
-const { changeRoles } = require("../../controllers/administration/Roles");
+const { changeRoles } = require("../../controllers/administration/Permissions");
 
 const {
   authenticateUser,
@@ -23,7 +23,7 @@ const {
  * @route /staff/register?role=role
  **/
 
-router.post("/register", authenticateUser, createStaff);
+router.post("/register", createStaff);
 
 /**
  * @description staff login
@@ -39,7 +39,7 @@ router.post("/login", staffLogin);
  * @route /update/details/:staffId?role=role
  **/
 
-router.post("/update/details/:staffId", authenticateUser, updateStaffDetails);
+router.post("/update/details/:staffId", updateStaffDetails);
 
 /**
  * @description update staff password
@@ -47,11 +47,7 @@ router.post("/update/details/:staffId", authenticateUser, updateStaffDetails);
  * @route /update/password/:staffId?role=role
  **/
 
-router.post(
-  "/update/password/:staffId",
-  authenticateUser,
-  updateStaffPasswords
-);
+router.post("/update/password/:staffId", updateStaffPasswords);
 
 /**
  * @description delete staff account
@@ -59,7 +55,7 @@ router.post(
  * @route /update/password/:staffId?role=role
  **/
 
-router.get("/delete/account/:staffId", authenticateUser, deletestaffAccount);
+router.get("/delete/account/:staffId", deletestaffAccount);
 
 /**
  * @description view all staff by role
@@ -67,7 +63,7 @@ router.get("/delete/account/:staffId", authenticateUser, deletestaffAccount);
  * @route /view/staff?role=role
  **/
 
-router.get("/view/staffs", authenticateUser, viewStaff);
+router.get("/view/staffs", viewStaff);
 
 /**
  * @description view all
@@ -75,7 +71,7 @@ router.get("/view/staffs", authenticateUser, viewStaff);
  * @route /view/all
  **/
 
-router.get("/view/staffs/all", authenticateAdmin, viewAllStaffs);
+router.get("/view/staffs/all", viewAllStaffs);
 
 /**
  * @description view staff profile

@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
-const Roles = require("./Roles");
+const Roles = require("./Permissions");
 const CarerDoc = require("./CarerDoc");
 
 const carerSchema = new mongoose.Schema({

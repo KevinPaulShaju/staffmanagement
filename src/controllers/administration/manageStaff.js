@@ -4,26 +4,61 @@ const {
   passwordValidation,
 } = require("../../services/staffValidation");
 const Staff = require("../../models/administration/staff");
-const Roles = require("../../models/administration/Roles");
+const Roles = require("../../models/administration/Permissions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 //Create staff
 exports.createStaff = async (req, res) => {
-  const role = req.query.role;
-  const { name, email, gender, phone, password, password2 } = req.body;
-  // validating the input
-
-  if (!req.body) {
-    return res.status(406).json({ error: "Inputs can not be left empty." });
+  const staffRole = req.query.role;
+  // const { name, email, gender, phone, password, password2 } = req.body;
+  if (!req.body.basicDetails || !req.body.permissions) {
+    return res.status(406).json({ error: "Fill up all the details." });
   }
+  const {
+    basicDetails: {
+      name,
+      email,
+      password,
+      password2,
+      phone,
+      gender,
+      dateOfBirth,
+      address,
+      geoLocation,
+      languageSpoken,
+      emergencyContactName,
+      emergencyContactNumber,
+      emergencyContactRelationship,
+      emergencyContactAddress,
+      role,
+      position,
+      preferredName,
+      accountNumber,
+      bankId,
+      taxFileNumber,
+    },
+    permissions: {
+      adminModule,
+      staffModule,
+      careTakerModule,
+      patientModule,
+      scheduleModule,
+      financeModule,
+      ndisModule,
+      nagModule,
+    },
+  } = req.body;
 
-  const { error } = staffValidation(req.body);
+  // validating the input
+  console.log(req.body.basicDetails.languageSpoken);
+
+  const { error } = staffValidation(req.body.basicDetails);
   if (error) {
     return res.status(406).json({ error: error.details[0].message });
   }
   try {
-    const existingStaff = await Staff.findOne({ email: email, role: role });
+    const existingStaff = await Staff.findOne({ email: email });
     if (existingStaff) {
       return res
         .status(406)
@@ -35,26 +70,20 @@ exports.createStaff = async (req, res) => {
       return res.status(406).json({ error: "Passwords do not match." });
     }
 
-    const newStaff = new Staff({
-      name,
-      email,
-      gender,
-      phone,
-      role,
-      password,
-    });
+    const newStaff = new Staff(req.body.basicDetails);
     const savedStaff = await newStaff.save();
 
     const newRoles = new Roles({
+      ...req.body.permissions,
       staffId: savedStaff._id,
-      onModel: "staff",
+      name: savedStaff.name,
     });
     const savedRole = await newRoles.save();
     res.status(200).json({
       message: `${role} staff has been successfully registered.`,
     });
   } catch (error) {
-    return res.json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -62,6 +91,9 @@ exports.createStaff = async (req, res) => {
 exports.staffLogin = async (req, res) => {
   const { email, password } = req.body;
   const role = req.query.role;
+  if (!role) {
+    return res.status(406).json({ error: "Role not specified" });
+  }
 
   if (!email || !password) {
     return res
@@ -84,13 +116,17 @@ exports.staffLogin = async (req, res) => {
       });
     }
 
+    const roleModules = await Roles.findOne({ staffId: existingStaff._id });
+
     // jwt authorization
     const key = process.env.JWT_SECRET;
     userId = existingStaff._id;
     const accessToken = jwt.sign(userId.toString(), key);
     console.log(accessToken);
     existingStaff.password = undefined;
-    res.status(200).json({ accessToken: accessToken, staff: existingStaff });
+    res
+      .status(200)
+      .json({ accessToken: accessToken, staff: existingStaff, roleModules });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -104,17 +140,6 @@ exports.updateStaffDetails = async (req, res) => {
   const { error } = updateValidation(req.body);
   if (error) {
     return res.status(406).json({ error: error.details[0].message });
-  }
-  const updates = Object.keys(req.body);
-
-  const allowUpdates = ["name", "phone"];
-
-  const isValidOperation = updates.every((update) =>
-    allowUpdates.includes(update)
-  );
-
-  if (!isValidOperation) {
-    return res.status(400).json({ error: "Invalid Operation" });
   }
 
   try {
@@ -130,8 +155,12 @@ exports.updateStaffDetails = async (req, res) => {
         // if the field we have in req.body exists, we're gonna update it
         query.$set[key] = req.body[key];
     }
-    const updatedStaff = await Staff.updateOne({ _id: staffId }, query);
-    res.status(200).json({ message: "Update Successfully" });
+    const updatedStaff = await Staff.findByIdAndUpdate({ _id: staffId }, query, {
+      new: true,
+    }).select("-password");
+    res
+      .status(200)
+      .json({ message: "Update Successfully", updatedStaff: updatedStaff });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -150,20 +179,10 @@ exports.updateStaffPasswords = async (req, res) => {
     return res.status(400).json({ error: "Passwords not matching." });
   }
 
-  const updates = Object.keys(req.body);
-
-  const allowUpdates = ["password", "password2"];
-
-  const isValidOperation = updates.every((update) =>
-    allowUpdates.includes(update)
-  );
-
-  if (!isValidOperation) {
-    return res.status(400).json({ error: "Invalid Operation" });
-  }
-
   try {
-    const existingStaff = await Staff.findOne({ _id: staffId });
+    const existingStaff = await Staff.findOne({ _id: staffId }).select(
+      "-password"
+    );
     if (!existingStaff) {
       return res.status(404).json({ error: "staff does not exist" });
     }
@@ -173,14 +192,9 @@ exports.updateStaffPasswords = async (req, res) => {
       const hashedPass = await bcrypt.hash(password, 10);
       req.body.password = hashedPass;
     }
-
     //   query
-    let query = { $set: {} };
-    for (let key in req.body) {
-      if (existingStaff[key] && existingStaff[key] !== req.body[key])
-        // if the field we have in req.body exists, we're gonna update it
-        query.$set[key] = req.body[key];
-    }
+    const query = { $set: { password: req.body.password } };
+
     const updatedStaff = await Staff.updateOne({ _id: staffId }, query);
     res.status(200).json({ message: "Password updated Successfully" });
   } catch (error) {
@@ -214,7 +228,7 @@ exports.viewStaff = async (req, res) => {
     if (findStaffs.length === 0) {
       return res.status(200).json({ message: "No Staff profile to view" });
     } else {
-      return res.status(200).json({ messages: findStaffs });
+      return res.status(200).json({ message: findStaffs });
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -227,7 +241,7 @@ exports.viewAllStaffs = async (req, res) => {
     if (allStaffs.length === 0) {
       return res.status(200).json({ message: "No Staff profile to view" });
     }
-    res.status(200).json({ messages: allStaffs });
+    res.status(200).json({ message: allStaffs });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
