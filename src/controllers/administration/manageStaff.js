@@ -7,6 +7,7 @@ const Staff = require("../../models/administration/staff");
 const Roles = require("../../models/administration/Permissions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 
 //Create staff
 exports.createStaff = async (req, res) => {
@@ -69,7 +70,8 @@ exports.createStaff = async (req, res) => {
     if (password !== password2) {
       return res.status(406).json({ error: "Passwords do not match." });
     }
-
+    
+    
     const newStaff = new Staff(req.body.basicDetails);
     const savedStaff = await newStaff.save();
 
@@ -212,6 +214,20 @@ exports.deletestaffAccount = async (req, res) => {
     if (!existingStaff) {
       return res.status(404).json({ error: "Staff does not exist" });
     }
+
+    if(existingStaff.photo !== null) {
+      const profilePic = existingStaff.photo;
+      var fields = profilePic.split("/");
+      const profilePhoto = fields[fields.length - 1];
+  
+      fs.unlink(`./uploads/images/staff/${profilePhoto}`, async (err) => {
+        if (err) {
+          return res.status(400).json({ error: err.message });
+        }
+        await existingStaff.remove();
+      });
+    }
+
     await existingStaff.remove();
     res.status(200).json({ message: "Staff Account Deleted" });
   } catch (e) {

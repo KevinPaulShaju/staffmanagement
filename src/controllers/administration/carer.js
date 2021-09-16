@@ -246,3 +246,54 @@ exports.viewAllCarers = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getProfilePic = async (req, res) => {
+  try {
+    //
+    const _id = req.params.carerId;
+    const findCarer = await Carer.findOne({_id});
+
+    if (!findCarer) {
+      return res.status(404).json({ error: "Carer Not Found" });
+    }
+
+    res.status(200).json({message: findCarer.photo})
+  }catch(e){
+    res.status(500).json({message:"Internal Server Error", error: e.message});
+  }
+}
+
+exports.removeProfilePic = async (req, res) => {
+  try{
+    //
+    const _id = req.params.carerId;
+    const findCarer = await Carer.findOne({_id});
+
+    if (!findCarer) {
+      return res.status(404).json({ error: "Carer Not Found" });
+    }
+
+    if(findCarer.photo === null) {
+      return res.status(204).json({ message: "Carer Does not have a photo" });
+    }
+    const profilePic = findCarer.photo;
+    var fields = profilePic.split("/");
+    const profilePhoto = fields[fields.length - 1];
+
+    fs.unlink(`./uploads/images/${profilePhoto}`, async (err) => {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      findCarer.photo = null;
+      await findCarer.save();
+    });
+
+    res.status(200).json({ success: 1, message:"Profile Photo Removed"});
+  }catch(e){
+    res.status(500).json({message:"Internal Server Error", error: e.message});
+  }
+}
+
+
+
+

@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 const User = require("../../models/user/user");
 const { passwordValidation } = require("../../services/staffValidation");
 
@@ -207,6 +208,19 @@ exports.deleteuser = async (req, res) => {
     const existingUser = await User.findOne({ _id: userId });
     if (!existingUser) {
       return res.status(404).json({ error: "This user does not exist" });
+    }
+
+    if(existingUser.photo !== null) {
+      const profilePic = existingUser.photo;
+      var fields = profilePic.split("/");
+      const profilePhoto = fields[fields.length - 1];
+  
+      fs.unlink(`./uploads/images/user/${profilePhoto}`, async (err) => {
+        if (err) {
+          return res.status(400).json({ error: err.message });
+        }
+        await existingUser.remove();
+      });
     }
     await existingUser.remove();
     res.status(200).json({ message: "User has been removed" });

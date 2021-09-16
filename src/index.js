@@ -7,6 +7,8 @@ const adminRoutes = require("./routes/administration/admin");
 const staffRoutes = require("./routes/administration/manageStaffs");
 const carerRoutes = require("./routes/administration/carer");
 const endUser = require("./routes/user/EndUser");
+const staffPhoto = require("./routes/administration/photo");
+const userPhoto = require("./routes/user/photo");
 const reportRoutes = require("./routes/user/reports");
 const serviceRoute = require("./routes/administration/services");
 
@@ -19,7 +21,8 @@ app.use(cors());
 // body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use("/profile/staff", express.static("uploads/images/staff"));
+app.use("/profile/user", express.static("uploads/images/user"));
 // connecting to db
 connectDB();
 
@@ -29,17 +32,20 @@ app.get("/", (req, res) => {
 
 app.use("/api/staff", staffRoutes);
 
+app.use("/api/staff/photo",staffPhoto);
+
 app.use("/api/admin", adminRoutes);
 
 app.use("/api/carer", carerRoutes);
 
 app.use("/api/user", endUser);
 
+app.use("/api/user/photo",userPhoto);
+
 app.use("/api/service", serviceRoute);
 
 app.use("/api/report", reportRoutes);
 
-app.use("/profile", express.static("uploads/images"));
 
 const PORT = process.env.PORT || 5000;
 

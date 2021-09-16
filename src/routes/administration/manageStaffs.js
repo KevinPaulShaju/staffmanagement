@@ -10,6 +10,8 @@ const {
   staffProfile,
   viewAllStaffs,
 } = require("../../controllers/administration/manageStaff");
+const upload = require("../../helpers/photo");
+
 const { changeRoles } = require("../../controllers/administration/Permissions");
 
 const {
@@ -23,7 +25,7 @@ const {
  * @route /staff/register?role=role
  **/
 
-router.post("/register", createStaff);
+router.post("/register",createStaff);
 
 /**
  * @description staff login
