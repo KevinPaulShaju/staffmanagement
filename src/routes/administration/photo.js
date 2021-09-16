@@ -4,13 +4,15 @@ const fs = require("fs");
 const Staff = require("../../models/administration/staff");
 const { uploadStaff } = require("../../helpers/photo");
 
-
-router.post("/add/:staffId",uploadStaff.single("photo"),async (req, res) => {
+router.post(
+  "/add/:staffId",
+  uploadStaff.single("photo"),
+  async (req, res) => {
     console.log(req.file);
 
     const _id = req.params.staffId;
 
-    const findStaff = await Staff.findOne({_id});
+    const findStaff = await Staff.findOne({ _id });
 
     if (!findStaff) {
       return res.status(404).json({ error: "Staff Not Found" });
@@ -47,53 +49,56 @@ router.post("/add/:staffId",uploadStaff.single("photo"),async (req, res) => {
 );
 
 //to get Staff profile photo
-router.get("/show/:staffId",async (req, res) => {
-    try {
-      //
-      const _id = req.params.staffId;
-      const findStaff = await Staff.findOne({_id});
-  
-      if (!findStaff) {
-        return res.status(404).json({ error: "Staff Not Found" });
-      }
-  
-      res.status(200).json({message: findStaff.photo})
-    }catch(e){
-      res.status(500).json({message:"Internal Server Error", error: e.message});
+router.get("/show/:staffId", async (req, res) => {
+  try {
+    //
+    const _id = req.params.staffId;
+    const findStaff = await Staff.findOne({ _id });
+
+    if (!findStaff) {
+      return res.status(404).json({ error: "Staff Not Found" });
     }
+
+    res.status(200).json({ message: findStaff.photo });
+  } catch (e) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: e.message });
+  }
 });
 
 //to remove profile picture
-router.get("/remove/:staffId",async (req, res) => {
-    try{
-      //
-      const _id = req.params.staffId;
-      const findStaff = await Staff.findOne({_id});
-  
-      if (!findStaff) {
-        return res.status(404).json({ error: "Staff Not Found" });
-      }
-  
-      if(findStaff.photo === null) {
-        return res.status(204).json({ message: "Staff Does not have a photo" });
-      }
-      const profilePic = findStaff.photo;
-      var fields = profilePic.split("/");
-      const profilePhoto = fields[fields.length - 1];
-  
-      fs.unlink(`./uploads/images/staff/${profilePhoto}`, async (err) => {
-        if (err) {
-          return res.status(400).json({ error: err.message });
-        }
-        findStaff.photo = null;
-        await findStaff.save();
-      });
-      
-      res.status(200).json({ success: 1, message:"Profile Photo Removed"});
-    }catch(e){
-      res.status(500).json({message:"Internal Server Error", error: e.message});
-    }
-});
+router.get("/remove/:staffId", async (req, res) => {
+  try {
+    //
+    const _id = req.params.staffId;
+    const findStaff = await Staff.findOne({ _id });
 
+    if (!findStaff) {
+      return res.status(404).json({ error: "Staff Not Found" });
+    }
+
+    if (findStaff.photo === null) {
+      return res.status(204).json({ message: "Staff Does not have a photo" });
+    }
+    const profilePic = findStaff.photo;
+    var fields = profilePic.split("/");
+    const profilePhoto = fields[fields.length - 1];
+
+    fs.unlink(`./uploads/images/staff/${profilePhoto}`, async (err) => {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      findStaff.photo = null;
+      await findStaff.save();
+    });
+
+    res.status(200).json({ success: 1, message: "Profile Photo Removed" });
+  } catch (e) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: e.message });
+  }
+});
 
 module.exports = router;

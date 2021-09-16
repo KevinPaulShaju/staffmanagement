@@ -25,7 +25,7 @@ const {
  * @route /staff/register?role=role
  **/
 
-router.post("/register",createStaff);
+router.post("/register", createStaff);
 
 /**
  * @description staff login

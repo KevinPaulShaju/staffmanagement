@@ -1,6 +1,6 @@
 const {
   staffValidation,
-  updateValidation,
+  staffUpdateValidation,
   passwordValidation,
 } = require("../../services/staffValidation");
 const Staff = require("../../models/administration/staff");
@@ -52,8 +52,6 @@ exports.createStaff = async (req, res) => {
   } = req.body;
 
   // validating the input
-  console.log(req.body.basicDetails.languageSpoken);
-
   const { error } = staffValidation(req.body.basicDetails);
   if (error) {
     return res.status(406).json({ error: error.details[0].message });
@@ -70,8 +68,7 @@ exports.createStaff = async (req, res) => {
     if (password !== password2) {
       return res.status(406).json({ error: "Passwords do not match." });
     }
-    
-    
+
     const newStaff = new Staff(req.body.basicDetails);
     const savedStaff = await newStaff.save();
 
@@ -124,7 +121,6 @@ exports.staffLogin = async (req, res) => {
     const key = process.env.JWT_SECRET;
     userId = existingStaff._id;
     const accessToken = jwt.sign(userId.toString(), key);
-    console.log(accessToken);
     existingStaff.password = undefined;
     res
       .status(200)
@@ -137,9 +133,8 @@ exports.staffLogin = async (req, res) => {
 // update staff details
 exports.updateStaffDetails = async (req, res) => {
   // const role = req.query.role;
-  // console.log(role);
   const staffId = req.params.staffId;
-  const { error } = updateValidation(req.body);
+  const { error } = staffUpdateValidation(req.body);
   if (error) {
     return res.status(406).json({ error: error.details[0].message });
   }
@@ -157,9 +152,13 @@ exports.updateStaffDetails = async (req, res) => {
         // if the field we have in req.body exists, we're gonna update it
         query.$set[key] = req.body[key];
     }
-    const updatedStaff = await Staff.findByIdAndUpdate({ _id: staffId }, query, {
-      new: true,
-    }).select("-password");
+    const updatedStaff = await Staff.findByIdAndUpdate(
+      { _id: staffId },
+      query,
+      {
+        new: true,
+      }
+    ).select("-password");
     res
       .status(200)
       .json({ message: "Update Successfully", updatedStaff: updatedStaff });
@@ -215,11 +214,11 @@ exports.deletestaffAccount = async (req, res) => {
       return res.status(404).json({ error: "Staff does not exist" });
     }
 
-    if(existingStaff.photo !== null) {
+    if (existingStaff.photo !== null) {
       const profilePic = existingStaff.photo;
       var fields = profilePic.split("/");
       const profilePhoto = fields[fields.length - 1];
-  
+
       fs.unlink(`./uploads/images/staff/${profilePhoto}`, async (err) => {
         if (err) {
           return res.status(400).json({ error: err.message });

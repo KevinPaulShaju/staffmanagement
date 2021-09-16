@@ -2,36 +2,38 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const UserReport = require("../../models/user/reportuser");
 
-const EndUserSchema = mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    password: { type: String, required: true },
-    phone: { type: String, required: true },
-    photo: { type: String, default: null },
-    gender: { type: String, required: true, enum: ["male", "female", "other"] },
-    DOB: { type: Date, default: Date.now() },
-    address: { type: String, default: "not provided" },
-    geolocation: { type: String },
-    languageSpoken: { type: String },
-    emergencyContactName: { type: String },
-    emergencyContactNumber: { type: String },
-    emergencyContactRelationship: { type: String },
-    emergencyContactAddress: { type: String },
-    secondaryContactName: { type: String },
-    secondaryContactNumber: { type: String },
-    secondaryContactRelationship: { type: String },
-    secondaryContactAddress: { type: String },
-    taxFileNumber: { type: String },
-    maidenName: { type: String },
-    isNDIC: { type: String, enum: ["yes", "no"] },
-    isReferred: { type: String, default: "no", enum: ["yes", "no"] },
-    preferredName: { type: String },
+const EndUserSchema = mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  phone: { type: String, required: true },
+  photo: { type: String, default: null },
+  gender: { type: String, required: true, enum: ["male", "female", "other"] },
+  dateOfBirth: { type: Date, default: Date.now() },
+  address: { type: String, default: "not provided" },
+  geoLocation: {
+    type: { type: String, required: true, enum: ["Point"] },
+    coordinates: {
+      latitude: { type: Number, required: true },
+      longitude: { type: Number, required: true },
+    },
   },
-  {
-    timestamps: true,
-  }
-);
+  languageSpoken: { type: Array, required: true },
+  emergencyContactName: { type: String, required: true },
+  emergencyContactNumber: { type: String, required: true },
+  emergencyContactRelationship: { type: String, required: true },
+  emergencyContactAddress: { type: String, required: true },
+  taxFileNumber: { type: Number, required: true },
+  maidenName: { type: String, required: true },
+  isNDIC: { type: String, required: true, enum: [true, false] },
+  isReferred: {
+    type: String,
+    required: true,
+    default: false,
+    enum: [true, false],
+  },
+  preferedName: { type: String, required: true },
+});
 
 EndUserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {

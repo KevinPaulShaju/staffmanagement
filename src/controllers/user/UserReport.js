@@ -1,6 +1,5 @@
 const UserReport = require("../../models/user/reportuser");
 const User = require("../../models/user/user");
-const Carer = require("../../models/administration/carer");
 
 exports.createUserReport = async (req, res) => {
   const carerId = req.query.carerId;

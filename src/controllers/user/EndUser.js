@@ -3,6 +3,10 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const User = require("../../models/user/user");
 const { passwordValidation } = require("../../services/staffValidation");
+const {
+  userUpdateValidation,
+  userValidation,
+} = require("../../services/userValidation");
 
 exports.registerUsers = async (req, res) => {
   const {
@@ -32,13 +36,10 @@ exports.registerUsers = async (req, res) => {
     preferredName,
   } = req.body;
 
-  if (!name || !email || !password || !password2 || !phone || !gender) {
-    return res.status(400).json({
-      error:
-        "name, email, password, password2, phone & gender all fields are required",
-    });
+  const { error } = userValidation(req.body);
+  if (error) {
+    return res.status(406).json({ error: error.details[0].message });
   }
-
   try {
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
@@ -54,7 +55,6 @@ exports.registerUsers = async (req, res) => {
     const savedUser = await newUser.save();
     res.status(200).json({
       message: `User staff has been successfully registered.`,
-      user: savedUser,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -85,41 +85,12 @@ exports.userLogin = async (req, res) => {
 
     // jwt authorization
     const key = process.env.JWT_SECRET;
-    userId = existingUser._id;
+    const userId = existingUser._id;
     const accessToken = jwt.sign(userId.toString(), key);
     existingUser.password = undefined;
     res.status(200).json({ accessToken: accessToken, user: existingUser });
   } catch (error) {
     res.status(500).json({ message: error.message });
-  }
-};
-
-exports.viewAllUsers = async (req, res) => {
-  try {
-    const allUsers = await User.find();
-    if (!allUsers || allUsers.length === 0) {
-      return res.status(404).json({ message: "No users found" });
-    }
-
-    res.status(200).json({ users: allUsers });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.viewUserProfile = async (req, res) => {
-  try {
-    // const _id = req.user.id;
-    const userId = req.params.userId;
-    const findUser = await User.findOne({ _id: userId }).select("-password");
-
-    if (!findUser) {
-      return res.status(404).json({ error: "User Does not exist" });
-    }
-
-    res.status(200).json({ result: findUser });
-  } catch (e) {
-    res.status(500).json({ message: e.message });
   }
 };
 
@@ -152,25 +123,57 @@ exports.updateUser = async (req, res) => {
     preferredName,
   } = req.body;
 
-  if (!name || !phone || !address) {
-    return res.status(400).json({
-      error: "all fields are required",
-    });
+  const { error } = userUpdateValidation(req.body);
+  if (error) {
+    return res.status(406).json({ error: error.details[0].message });
   }
+
   try {
     const existingUser = await User.findOne({ _id: userId });
     if (!existingUser) {
       return res.status(404).json({ error: "This user does not exist" });
     }
 
-    let query = { $set: { name, phone, address } };
+    let query = { $set: req.body };
 
-    const updatedUser = await User.updateOne({ _id: userId }, query);
-    res
-      .status(200)
-      .json({ message: "User details has been uodated successfully" });
+    const updatedUser = await User.findByIdAndUpdate({ _id: userId }, query, {
+      new: true,
+    }).select("-password");
+    res.status(200).json({
+      message: "User details has been uodated successfully",
+      updatedUser: updatedUser,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.viewAllUsers = async (req, res) => {
+  try {
+    const allUsers = await User.find();
+    if (!allUsers || allUsers.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    res.status(200).json({ users: allUsers });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.viewUserProfile = async (req, res) => {
+  try {
+    // const _id = req.user.id;
+    const userId = req.params.userId;
+    const findUser = await User.findOne({ _id: userId }).select("-password");
+
+    if (!findUser) {
+      return res.status(404).json({ error: "User Does not exist" });
+    }
+
+    res.status(200).json({ result: findUser });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
   }
 };
 
@@ -210,11 +213,11 @@ exports.deleteuser = async (req, res) => {
       return res.status(404).json({ error: "This user does not exist" });
     }
 
-    if(existingUser.photo !== null) {
+    if (existingUser.photo !== null) {
       const profilePic = existingUser.photo;
       var fields = profilePic.split("/");
       const profilePhoto = fields[fields.length - 1];
-  
+
       fs.unlink(`./uploads/images/user/${profilePhoto}`, async (err) => {
         if (err) {
           return res.status(400).json({ error: err.message });

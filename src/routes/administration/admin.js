@@ -41,7 +41,11 @@ router.post("/update/details/:adminId", authenticateAdmin, updateAdminDetails);
  * @route /update/password/:adminId
  **/
 
-router.post("/update/password/:adminId",authenticateAdmin,updateAdminPasswords);
+router.post(
+  "/update/password/:adminId",
+  authenticateAdmin,
+  updateAdminPasswords
+);
 
 /**
  * @description delete admin account
