@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
-const { date } = require("joi");
 const mongoose = require("mongoose");
 const Roles = require("./Permissions");
+const CarerDoc = require("../../models/administration/CarerDoc");
 
 const StaffSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -30,6 +30,7 @@ const StaffSchema = new mongoose.Schema({
   accountNumber: { type: Number, required: true },
   bankId: { type: Number, required: true },
   taxFileNumber: { type: Number, required: true },
+  status:{type:String}
 });
 
 //Hashing the Password
@@ -49,6 +50,15 @@ StaffSchema.pre("remove", async function (next) {
   }
   next();
 });
+
+StaffSchema.pre("remove", async function (next) {
+  const document = await CarerDoc.findOne({ carerId: this.id });
+  if (document) {
+    await document.remove();
+  }
+  next();
+});
+
 
 const Staff = mongoose.model("Staff", StaffSchema);
 module.exports = Staff;

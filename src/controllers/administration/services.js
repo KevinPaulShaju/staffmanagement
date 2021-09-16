@@ -82,11 +82,7 @@ exports.updateServices = async (req, res) => {
       $set: req.body,
     };
 
-    const updatedServices = await Services.findOneAndUpdate(
-      { _id: serviceId },
-      query,
-      { new: true }
-    );
+    const updatedServices = await Services.findOneAndUpdate({ _id: serviceId },query,{ new: true });
     res.status(200).json({
       message: "Service has been updated successfully",
       updatedServices: updatedServices,

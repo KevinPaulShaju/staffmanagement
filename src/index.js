@@ -7,6 +7,7 @@ const adminRoutes = require("./routes/administration/admin");
 const staffRoutes = require("./routes/administration/manageStaffs");
 const endUser = require("./routes/user/EndUser");
 const staffPhoto = require("./routes/administration/photo");
+const carerDocument = require("./routes/administration/carerdoc");
 const userPhoto = require("./routes/user/photo");
 const reportRoutes = require("./routes/user/reports");
 const serviceRoute = require("./routes/administration/services");
@@ -32,6 +33,8 @@ app.get("/", (req, res) => {
 app.use("/api/staff", staffRoutes);
 
 app.use("/api/staff/photo", staffPhoto);
+
+app.use("/api/carer/document",carerDocument);
 
 app.use("/api/admin", adminRoutes);
 

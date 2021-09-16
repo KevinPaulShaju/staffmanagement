@@ -6,9 +6,7 @@ exports.createUserReport = async (req, res) => {
   const userId = req.query.userId;
 
   if (!carerId || !userId) {
-    return res
-      .status(400)
-      .json({ error: "Both user and Carer must be defined" });
+    return res.status(400).json({ error: "Both user and Carer must be defined" });
   }
 
   const { report } = req.body;
