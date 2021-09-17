@@ -276,7 +276,11 @@ exports.staffProfile = async (req, res) => {
     if (!findStaff) {
       return res.status(404).json({ error: "Staff not found" });
     }
-    res.status(200).json({ message: findStaff });
+    const permissions = await Roles.findOne({ staffId: findStaff._id });
+    if (!permissions) {
+      res.status(404).json({ error: "Missing permissions data" });
+    }
+    res.status(200).json({ staff: findStaff, permissions: permissions });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
