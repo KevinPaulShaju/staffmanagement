@@ -75,7 +75,7 @@ exports.createCarerDocument = async(req,res)=>{
 
 exports.viewAllDocuments = async (req, res) => {
     try {
-        const findDocuments = await CarerDoc.find({});
+        const findDocuments = await CarerDoc.find();
 
         if(findDocuments.length === 0){
             return res.status(200).json({message:"No Documents Available."});
