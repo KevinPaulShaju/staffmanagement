@@ -165,9 +165,13 @@ exports.updateStaffDetails = async (req, res) => {
         new: true,
       }
     ).select("-password");
-    res
-      .status(200)
-      .json({ message: "Update Successfully", updatedStaff: updatedStaff });
+    const roleModules = await Roles.findOne({ staffId: existingStaff._id });
+
+    res.status(200).json({
+      message: "Update Successfully",
+      updatedStaff: updatedStaff,
+      roleModules: roleModules,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
