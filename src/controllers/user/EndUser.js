@@ -10,7 +10,8 @@ const {
 
 exports.registerUsers = async (req, res) => {
   const {
-    name,
+    firstName,
+    lastName,
     email,
     password,
     password2,
@@ -140,7 +141,7 @@ exports.updateUser = async (req, res) => {
       new: true,
     }).select("-password");
     res.status(200).json({
-      message: "User details has been uodated successfully",
+      message: "User details has been updated successfully",
       updatedUser: updatedUser,
     });
   } catch (error) {

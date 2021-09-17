@@ -9,7 +9,8 @@ const jwt = require("jsonwebtoken");
 
 //Create admin
 exports.createAdmin = async (req, res) => {
-  const { name, email, gender, phone, password, password2 } = req.body;
+  const { firstName, lastName, email, gender, phone, password, password2 } =
+    req.body;
   // validating the input
 
   if (!req.body) {
@@ -33,7 +34,14 @@ exports.createAdmin = async (req, res) => {
       return res.status(406).json({ error: "Passwords do not match." });
     }
 
-    const newAdmin = new Admin({ name, email, gender, phone, password });
+    const newAdmin = new Admin({
+      firstName,
+      lastName,
+      email,
+      gender,
+      phone,
+      password,
+    });
     const savedAdmin = await newAdmin.save();
     res
       .status(200)

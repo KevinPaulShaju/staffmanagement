@@ -18,7 +18,8 @@ exports.createStaff = async (req, res) => {
   }
   const {
     basicDetails: {
-      name,
+      firstName,
+      lastName,
       email,
       password,
       password2,
@@ -69,10 +70,10 @@ exports.createStaff = async (req, res) => {
       return res.status(406).json({ error: "Passwords do not match." });
     }
 
-    var newStaff
-    if(req.body.basicDetails.role === "carer"){
-      newStaff = new Staff({...req.body.basicDetails,status:"pending"});
-    }else{
+    var newStaff;
+    if (req.body.basicDetails.role === "carer") {
+      newStaff = new Staff({ ...req.body.basicDetails, status: "pending" });
+    } else {
       newStaff = new Staff(req.body.basicDetails);
     }
     const savedStaff = await newStaff.save();

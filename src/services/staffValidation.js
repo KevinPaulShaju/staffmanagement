@@ -3,7 +3,8 @@ const { phoneMethod } = require("../helpers/joiValidationHelpers");
 
 const staffValidation = (data) => {
   const schema = Joi.object({
-    name: Joi.string().required().min(3).max(20),
+    firstName: Joi.string().required().min(3).max(20),
+    lastName: Joi.string().required().min(3).max(20),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(6),
     password2: Joi.string().required().min(6).valid(Joi.ref("password")),
@@ -42,7 +43,8 @@ const staffValidation = (data) => {
 
 const staffUpdateValidation = (data) => {
   const schema = Joi.object({
-    name: Joi.string().required().min(3).max(20),
+    firstName: Joi.string().required().min(3).max(20),
+    lastName: Joi.string().required().min(3).max(20),
     email: Joi.string().required().email(),
     phone: Joi.string()
       .required()

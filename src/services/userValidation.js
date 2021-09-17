@@ -7,7 +7,8 @@ const {
 
 const userValidation = (data) => {
   const schema = Joi.object({
-    name: Joi.string().required().min(3).max(20),
+    firstName: Joi.string().required().min(3).max(20),
+    lastName: Joi.string().required().min(3).max(20),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(6),
     password2: Joi.string().required().min(6).valid(Joi.ref("password")),
@@ -45,7 +46,8 @@ const userValidation = (data) => {
 
 const userUpdateValidation = (data) => {
   const schema = Joi.object({
-    name: Joi.string().required().min(3).max(20),
+    firstName: Joi.string().required().min(3).max(20),
+    lastName: Joi.string().required().min(3).max(20),
     email: Joi.string().required().email(),
     phone: Joi.string()
       .required()

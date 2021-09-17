@@ -4,7 +4,8 @@ const Roles = require("./Permissions");
 const CarerDoc = require("../../models/administration/CarerDoc");
 
 const StaffSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String, required: true },
   gender: { type: String, required: true, enum: ["male", "female", "other"] },
@@ -30,7 +31,7 @@ const StaffSchema = new mongoose.Schema({
   accountNumber: { type: Number, required: true },
   bankId: { type: Number, required: true },
   taxFileNumber: { type: Number, required: true },
-  status:{type:String}
+  status: { type: String },
 });
 
 //Hashing the Password
