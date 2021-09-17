@@ -162,12 +162,8 @@ exports.updateStaffDetails = async (req, res) => {
     }
 
     //   query
-    let query = { $set: {} };
-    for (let key in req.body) {
-      if (existingStaff[key] && existingStaff[key] !== req.body[key])
-        // if the field we have in req.body exists, we're gonna update it
-        query.$set[key] = req.body[key];
-    }
+    let query = { $set: req.body.basicDetails };
+
     const updatedStaff = await Staff.findOneAndUpdate({ _id: staffId }, query, {
       new: true,
     }).select("-password");
