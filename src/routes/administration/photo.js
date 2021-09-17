@@ -4,18 +4,23 @@ const fs = require("fs");
 const Staff = require("../../models/administration/staff");
 const { uploadStaff } = require("../../helpers/photo");
 
-router.post(
-  "/add/:staffId",
-  uploadStaff.single("photo"),
-  async (req, res) => {
+router.post("/add/:staffId",uploadStaff.single("photo"),async (req, res) => {
     console.log(req.file);
 
     const _id = req.params.staffId;
 
+    if(!_id) {
+      return res.status(400).json({error:"Id Required"});
+    }
+
+    if(!req.file){
+      return res.status(400).json({error:"Please Upload a Photo"})
+    }
+
     const findStaff = await Staff.findOne({ _id });
 
     if (!findStaff) {
-      return res.status(404).json({ error: "Staff Not Found" });
+      return res.status(404).json({ error: "Staff Not Found ." });
     }
 
     if (findStaff.photo !== null) {
@@ -53,6 +58,10 @@ router.get("/show/:staffId", async (req, res) => {
   try {
     //
     const _id = req.params.staffId;
+    if(!_id) {
+      return res.status(400).json({error:"Id Required"});
+    }
+
     const findStaff = await Staff.findOne({ _id });
 
     if (!findStaff) {
@@ -72,6 +81,10 @@ router.get("/remove/:staffId", async (req, res) => {
   try {
     //
     const _id = req.params.staffId;
+    if(!_id) {
+      return res.status(400).json({error:"Id Required"});
+    }
+    
     const findStaff = await Staff.findOne({ _id });
 
     if (!findStaff) {

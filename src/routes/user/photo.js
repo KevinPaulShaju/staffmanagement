@@ -4,14 +4,16 @@ const fs = require("fs");
 const User = require("../../models/user/user");
 const { uploadUser } = require("../../helpers/photo");
 
-router.post(
-  "/add/:userId",
-  uploadUser.single("photo"),
-  async (req, res) => {
+router.post("/add/:userId",uploadUser.single("photo"),async (req, res) => {
     console.log(req.file);
 
     const _id = req.params.userId;
-
+    if(!_id) {
+      return res.status(400).json({error:"Id Required"});
+    }
+    if(!req.file){
+      return res.status(400).json({error:"Please Upload a Photo"})
+    }
     const findUser = await User.findOne({ _id });
 
     if (!findUser) {
@@ -53,6 +55,10 @@ router.get("/show/:userId", async (req, res) => {
   try {
     //
     const _id = req.params.userId;
+    if(!_id) {
+      return res.status(400).json({error:"Id Required"});
+    }
+
     const findUser = await User.findOne({ _id });
 
     if (!findUser) {
@@ -72,6 +78,9 @@ router.get("/remove/:userId", async (req, res) => {
   try {
     //
     const _id = req.params.userId;
+    if(!_id) {
+      return res.status(400).json({error:"Id Required"});
+    }
     const findUser = await User.findOne({ _id });
 
     if (!findUser) {
