@@ -3,6 +3,7 @@ const {
   staffUpdateValidation,
   passwordValidation,
 } = require("../../services/staffValidation");
+const { rolesValidation } = require("../../services/rolesValidation");
 const Staff = require("../../models/administration/staff");
 const Roles = require("../../models/administration/Permissions");
 const bcrypt = require("bcryptjs");
@@ -56,6 +57,11 @@ exports.createStaff = async (req, res) => {
   const { error } = staffValidation(req.body.basicDetails);
   if (error) {
     return res.status(406).json({ error: error.details[0].message });
+  }
+
+  const { error: error1 } = rolesValidation(req.body.permissions);
+  if (error1) {
+    return res.status(406).json({ error: error1.details[0].message });
   }
   try {
     const existingStaff = await Staff.findOne({ email: email });
@@ -140,9 +146,13 @@ exports.staffLogin = async (req, res) => {
 exports.updateStaffDetails = async (req, res) => {
   // const role = req.query.role;
   const staffId = req.params.staffId;
-  const { error } = staffUpdateValidation(req.body);
+  const { error } = staffUpdateValidation(req.body.basicDetails);
   if (error) {
     return res.status(406).json({ error: error.details[0].message });
+  }
+  const { error: error1 } = rolesValidation(req.body.permissions);
+  if (error1) {
+    return res.status(406).json({ error: error1.details[0].message });
   }
 
   try {
@@ -158,19 +168,24 @@ exports.updateStaffDetails = async (req, res) => {
         // if the field we have in req.body exists, we're gonna update it
         query.$set[key] = req.body[key];
     }
-    const updatedStaff = await Staff.findByIdAndUpdate(
-      { _id: staffId },
-      query,
+    const updatedStaff = await Staff.findOneAndUpdate({ _id: staffId }, query, {
+      new: true,
+    }).select("-password");
+
+    let query2 = { $set: req.body.permissions };
+
+    const updatedRoles = await Roles.findOneAndUpdate(
       {
-        new: true,
-      }
-    ).select("-password");
-    const roleModules = await Roles.findOne({ staffId: existingStaff._id });
+        staffId: existingStaff._id,
+      },
+      query2,
+      { new: true }
+    );
 
     res.status(200).json({
       message: "Update Successfully",
       updatedStaff: updatedStaff,
-      roleModules: roleModules,
+      updatedRoles: updatedRoles,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
