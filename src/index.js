@@ -18,7 +18,7 @@ dotenv.config({ path: "config/config.env" });
 
 // cors
 const corsOptions = {
-  origin: "http://3.21.210.66/",
+  origin: "http://3.21.210.66",
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
