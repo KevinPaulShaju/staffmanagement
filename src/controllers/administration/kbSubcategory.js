@@ -5,22 +5,15 @@ exports.addSubcategory = async (req, res) => {
   const categoryId = req.params.categoryId;
   const { subcategoryName } = req.body;
   if (!subcategoryName) {
-    return res
-      .status(406)
-      .json({ error: "Enter a valid Knowledge base sub category name" });
+    return res.status(406).json({ error: "Enter a valid Knowledge base sub category name" });
   }
   try {
     const existingCategory = await KbCategory.findOne({ _id: categoryId });
     if (!existingCategory) {
-      return res
-        .status(404)
-        .json({ error: "Knowledge base Category does not exist" });
+      return res.status(404).json({ error: "Knowledge base Category does not exist" });
     }
 
-    const newSubCategory = new KbSubcategory({
-      categoryId,
-      subcategoryName,
-    });
+    const newSubCategory = new KbSubcategory({categoryId,subcategoryName,});
 
     const savedSubCategory = await newSubCategory.save();
     res.status(200).json({
@@ -89,9 +82,7 @@ exports.viewSubcategoryByCategory = async (req, res) => {
   try {
     const existingCategory = await KbCategory.findOne({ _id: categoryId });
     if (!existingCategory) {
-      return res
-        .status(404)
-        .json({ error: "This knowledge base category does not exist" });
+      return res.status(404).json({ error: "This knowledge base category does not exist" });
     }
 
     const subcategoryByCategory = await KbSubcategory.find({
@@ -99,10 +90,7 @@ exports.viewSubcategoryByCategory = async (req, res) => {
     });
 
     if (!subcategoryByCategory || subcategoryByCategory.length === 0) {
-      return res.status(404).json({
-        error:
-          "You have not added any knowledge base categories. May be add one?",
-      });
+      return res.status(404).json({error:"You have not added any knowledge base categories. May be add one?"});
     }
     res.status(200).json({
       message: `you have ${subcategoryByCategory.length} knowledge base categories`,
@@ -112,6 +100,7 @@ exports.viewSubcategoryByCategory = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 exports.removeSubcategory = async (req, res) => {
   const subCategoryId = req.params.subCategoryId;
   try {

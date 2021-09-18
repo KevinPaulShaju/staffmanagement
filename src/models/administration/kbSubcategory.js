@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const kbSubcategorySchema = new mongoose.Schema({
   categoryId: { type: Schema.Types.ObjectId, ref: "kbCategory" },
   subcategoryName: { type: String, required: true },
-  dataPath: { type: String },
+  dataPath: { type: String,default:null },
   text: { type: String },
 });
 

@@ -12,14 +12,14 @@ const userPhoto = require("./routes/user/photo");
 const reportRoutes = require("./routes/user/reports");
 const serviceRoutes = require("./routes/administration/services");
 const kbRoutes = require("./routes/administration/kbCategory");
-const kbSubRoutes = require("./routes/administration/kbSubcategory");
-
+const kbSubRoutes = require("./routes/administration/kbSubCat");
+const kbDocumentRouter = require("./routes/administration/kbDocument");
 // env config
 dotenv.config({ path: "config/config.env" });
 
 // cors
 const corsOptions = {
-  origin: "http://localhost:4200",
+  origin: "http://3.21.210.66/",
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
@@ -30,6 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/profile/staff", express.static("uploads/images/staff"));
 app.use("/profile/user", express.static("uploads/images/user"));
+app.use("/kbdocuments", express.static("uploads/kbdocuments"));
 // connecting to db
 connectDB();
 
@@ -56,6 +57,8 @@ app.use("/api/report", reportRoutes);
 app.use("/api/kb/category", kbRoutes);
 
 app.use("/api/kb/subcategory", kbSubRoutes);
+
+app.use("/api/kbdocuments/",kbDocumentRouter);
 
 const PORT = process.env.PORT || 5000;
 

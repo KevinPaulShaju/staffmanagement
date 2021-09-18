@@ -13,7 +13,6 @@ const storageStaff = multer.diskStorage({
     },
 });
 
-
 const storageUser = multer.diskStorage({
     destination: "./uploads/images/user/",
 
@@ -22,6 +21,14 @@ const storageUser = multer.diskStorage({
             null,
             `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`
         );
+    },
+});
+
+const storageKbDocuments = multer.diskStorage({
+    destination: "./uploads/kbdocuments/",
+
+    filename: function (req, file, cb) {
+        return cb(null,`${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
     },
 });
 
@@ -57,4 +64,20 @@ const uploadUser = multer({
 });
 
 
-module.exports = {uploadStaff,uploadUser};
+const kbDocuments = multer({
+    storage: storageKbDocuments,
+    limits: {
+        fileSize: 5000000*2,
+    },
+    abortOnLimit: true,
+    fileFilter(req, file, cb,next) {
+        if (!file.originalname.match(/\.(pdf|txt)$/)) {
+            return cb(new Error("Please Upload a Photo"));
+        }
+        cb(undefined, true);
+        
+    },
+});
+
+
+module.exports = {uploadStaff,uploadUser,kbDocuments};
