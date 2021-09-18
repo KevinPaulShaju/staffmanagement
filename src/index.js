@@ -17,7 +17,7 @@ dotenv.config({ path: "config/config.env" });
 
 // cors
 const corsOptions = {
-  origin: "http://localhost:5000",
+  origin: "http://localhost:4200",
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
