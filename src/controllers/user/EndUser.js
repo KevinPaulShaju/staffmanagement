@@ -137,7 +137,7 @@ exports.updateUser = async (req, res) => {
 
     let query = { $set: req.body };
 
-    const updatedUser = await User.findByIdAndUpdate({ _id: userId }, query, {
+    const updatedUser = await User.findOneAndUpdate({ _id: userId }, query, {
       new: true,
     }).select("-password");
     res.status(200).json({
