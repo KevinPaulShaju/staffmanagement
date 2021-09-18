@@ -18,7 +18,7 @@ dotenv.config({ path: "config/config.env" });
 
 // cors
 const corsOptions = {
-  origin: "http://3.21.210.66",
+  origin: ["http://3.21.210.66", "http://localhost:4200"],
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
@@ -56,7 +56,6 @@ app.use("/api/report", reportRoutes);
 app.use("/api/kb/category", kbRoutes);
 
 app.use("/api/kb/subcategory", kbSubRoutes);
-
 
 const PORT = process.env.PORT || 5000;
 
