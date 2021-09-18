@@ -87,7 +87,7 @@ exports.viewAllCategories = async (req, res) => {
     const categories = await kbCategory.find();
     if (!categories || !categories.length) {
       return res.status(404).json({
-        message:
+        error:
           "You have not added any knowledge base categories. May be add one?",
       });
     }
