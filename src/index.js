@@ -13,7 +13,6 @@ const reportRoutes = require("./routes/user/reports");
 const serviceRoutes = require("./routes/administration/services");
 const kbRoutes = require("./routes/administration/kbCategory");
 const kbSubRoutes = require("./routes/administration/kbSubCat");
-const kbDocumentRouter = require("./routes/administration/kbDocument");
 // env config
 dotenv.config({ path: "config/config.env" });
 
@@ -58,7 +57,6 @@ app.use("/api/kb/category", kbRoutes);
 
 app.use("/api/kb/subcategory", kbSubRoutes);
 
-app.use("/api/kbdocuments/",kbDocumentRouter);
 
 const PORT = process.env.PORT || 5000;
 
