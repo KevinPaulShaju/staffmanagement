@@ -26,6 +26,7 @@ const EndUserSchema = mongoose.Schema({
   emergencyContactAddress: { type: String, required: true },
   ndicNumber: { type: Number, required: true },
   tacNumber: { type: Number, required: true },
+  brokerageName: { type: String, required: true },
   // taxFileNumber: { type: Number, required: true },
   // maidenName: { type: String, required: true },
   // isNDIC: { type: String, required: true, enum: [true, false] },
