@@ -32,26 +32,44 @@ exports.addSubcategory = async (req, res) => {
   }
 };
 exports.editSubcategory = async (req, res) => {
+  const subCategoryId = req.params.subCategoryId;
+  const { subcategoryName } = req.body;
+  if (!subcategoryName) {
+    return res
+      .status(406)
+      .json({ error: "Enter a valid Knowledge base sub category name" });
+  }
   try {
+    const existingSubCategory = await KbSubcategory.findOne({
+      _id: subCategoryId,
+    });
+
+    if (!existingSubCategory) {
+      return res
+        .status(404)
+        .json({ error: "Knowledge base sub category does not exist" });
+    }
+
+    const updatedSubCategory = await KbSubcategory.findOneAndUpdate({});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-exports.viewSubcategory = async (req, res) => {
-  try {
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-exports.viewSubcategoryByCategory = async (req, res) => {
-  try {
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-exports.removeSubcategory = async (req, res) => {
-  try {
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+// exports.viewSubcategory = async (req, res) => {
+//   try {
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+// exports.viewSubcategoryByCategory = async (req, res) => {
+//   try {
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+// exports.removeSubcategory = async (req, res) => {
+//   try {
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
