@@ -101,10 +101,10 @@ exports.createStaff = async (req, res) => {
 // staff login
 exports.staffLogin = async (req, res) => {
   const { email, password } = req.body;
-  const role = req.query.role;
-  if (!role) {
-    return res.status(406).json({ error: "Role not specified" });
-  }
+  // const role = req.query.role;
+  // if (!role) {
+  //   return res.status(406).json({ error: "Role not specified" });
+  // }
 
   if (!email || !password) {
     return res
@@ -116,7 +116,7 @@ exports.staffLogin = async (req, res) => {
     // checking if the user exists
     let existingStaff = await Staff.findOne({ email: email });
     if (!existingStaff) {
-      return res.status(404).json({ error: `${role} does not exist.` });
+      return res.status(404).json({ error: `Staff does not exist.` });
     }
 
     //   match password

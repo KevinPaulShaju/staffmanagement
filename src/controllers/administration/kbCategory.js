@@ -113,7 +113,7 @@ exports.deleteCategories = async (req, res) => {
         .json({ error: "This knowledge base category does not exist" });
     }
 
-    await existingStaff.remove();
+    await existingCategory.remove();
 
     res
       .status(200)

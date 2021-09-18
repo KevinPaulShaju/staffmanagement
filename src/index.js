@@ -5,12 +5,13 @@ const cors = require("cors");
 const connectDB = require("./database/database");
 const adminRoutes = require("./routes/administration/admin");
 const staffRoutes = require("./routes/administration/manageStaffs");
-const endUser = require("./routes/user/EndUser");
+const endUserRoutes = require("./routes/user/EndUser");
 const staffPhoto = require("./routes/administration/photo");
-const carerDocument = require("./routes/administration/carerdoc");
+const carerDocumentRoutes = require("./routes/administration/carerdoc");
 const userPhoto = require("./routes/user/photo");
 const reportRoutes = require("./routes/user/reports");
-const serviceRoute = require("./routes/administration/services");
+const serviceRoutes = require("./routes/administration/services");
+const kbRoutes = require("./routes/administration/kbCategory");
 
 // env config
 dotenv.config({ path: "config/config.env" });
@@ -39,17 +40,19 @@ app.use("/api/staff", staffRoutes);
 
 app.use("/api/staff/photo", staffPhoto);
 
-app.use("/api/carer/document",carerDocument);
+app.use("/api/carer/document", carerDocumentRoutes);
 
 app.use("/api/admin", adminRoutes);
 
-app.use("/api/user", endUser);
+app.use("/api/user", endUserRoutes);
 
 app.use("/api/user/photo", userPhoto);
 
-app.use("/api/service", serviceRoute);
+app.use("/api/service", serviceRoutes);
 
 app.use("/api/report", reportRoutes);
+
+app.use("/api/kb/category", kbRoutes);
 
 const PORT = process.env.PORT || 5000;
 
