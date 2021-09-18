@@ -134,9 +134,11 @@ exports.staffLogin = async (req, res) => {
     userId = existingStaff._id;
     const accessToken = jwt.sign(userId.toString(), key);
     existingStaff.password = undefined;
-    res
-      .status(200)
-      .json({ accessToken: accessToken, staff: existingStaff, roleModules });
+    res.status(200).json({
+      accessToken: accessToken,
+      staff: existingStaff,
+      roleModules: roleModules,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

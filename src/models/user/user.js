@@ -24,16 +24,18 @@ const EndUserSchema = mongoose.Schema({
   emergencyContactNumber: { type: String, required: true },
   emergencyContactRelationship: { type: String, required: true },
   emergencyContactAddress: { type: String, required: true },
-  taxFileNumber: { type: Number, required: true },
-  maidenName: { type: String, required: true },
-  isNDIC: { type: String, required: true, enum: [true, false] },
-  isReferred: {
-    type: String,
-    required: true,
-    default: false,
-    enum: [true, false],
-  },
-  preferedName: { type: String, required: true },
+  ndicNumber: { type: Number, required: true },
+  tacNumber: { type: Number, required: true },
+  // taxFileNumber: { type: Number, required: true },
+  // maidenName: { type: String, required: true },
+  // isNDIC: { type: String, required: true, enum: [true, false] },
+  // isReferred: {
+  //   type: String,
+  //   required: true,
+  //   default: false,
+  //   enum: [true, false],
+  // },
+  // preferedName: { type: String, required: true },
 });
 
 EndUserSchema.pre("save", async function (next) {

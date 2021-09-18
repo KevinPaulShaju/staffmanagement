@@ -34,11 +34,13 @@ const userValidation = (data) => {
       .custom(phoneMethod, "custom validation"),
     emergencyContactRelationship: Joi.string().required().min(3).max(20),
     emergencyContactAddress: Joi.string().required().min(15),
-    taxFileNumber: Joi.number().unsafe().required(),
-    maidenName: Joi.string().required().min(3).max(20),
-    preferedName: Joi.string().required().min(3).max(20),
-    isNDIC: Joi.boolean().valid(true, false).required(),
-    isReferred: Joi.boolean().valid(true, false).required(),
+    ndicNumber: Joi.number().unsafe().required(),
+    tacNumber: Joi.number().unsafe().required(),
+    // taxFileNumber: Joi.number().unsafe().required(),
+    // maidenName: Joi.string().required().min(3).max(20),
+    // preferedName: Joi.string().required().min(3).max(20),
+    // isNDIC: Joi.boolean().valid(true, false).required(),
+    // isReferred: Joi.boolean().valid(true, false).required(),
   });
 
   return schema.validate(data);
