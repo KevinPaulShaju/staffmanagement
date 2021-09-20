@@ -26,8 +26,9 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
 
         if(req.file){
             const newSubCategory = new Subcategory({
-                categoryId,subcategoryName,
-                dataPath : `http://localhost:5000/kbdocuments/${req.file.filename}`
+              categoryId,
+              subcategoryName,
+              dataPath: `https://careflo.herokuapp.com/kbdocuments/${req.file.filename}`,
             });
             const savedSubCategory = await newSubCategory.save();
             return res.status(201).json({
