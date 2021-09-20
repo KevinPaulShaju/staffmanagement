@@ -58,12 +58,14 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
 
 
 router.get("/view/:subCategoryId",async (req, res) => {
-    const _id = req.params.subCategoryId;
-    if(!_id) {
-        return res.status(400).json({error:"Id Required"})
+    const subCategoryId = req.params.subCategoryId;
+    if (!subCategoryId) {
+      return res.status(400).json({ error: "Id Required" });
     }
     try {
-      const existingSubCategory = await Subcategory.findOne({_id});
+      const existingSubCategory = await Subcategory.findOne({
+        _id: subCategoryId,
+      });
   
       if (!existingSubCategory) {
         return res.status(404).json({ error: "Knowledge base sub category does not exist" });
