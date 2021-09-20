@@ -32,7 +32,7 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
             newSubCategory = new Subcategory({
               categoryId,
               subcategoryName,
-              documents: `http://localhost:5000/kbdocuments/${req.file.filename}`,
+              documents: `https://careflo.herokuapp.com/kbdocuments/${req.file.filename}`,
             });
             savedSubCategory = await newSubCategory.save();
             return res.status(201).json({
@@ -98,7 +98,7 @@ router.post("/update/document/:subcategoryId",kbDocuments.single("document"),asy
       })
 
       if(req.file){
-        findSubCategory.documents = `http://localhost:5000/kbdocuments/${req.file.filename}`,
+        findSubCategory.documents = `https://careflo.herokuapp.com/kbdocuments/${req.file.filename}`,
         findSubCategory.links = null;
         findSubCategory.content = null;
         findSubCategory.save();
@@ -119,7 +119,7 @@ router.post("/update/document/:subcategoryId",kbDocuments.single("document"),asy
     }
 
     if(req.file){
-      findSubCategory.documents = `http://localhost:5000/kbdocuments/${req.file.filename}`,
+      findSubCategory.documents = `https://careflo.herokuapp.com/kbdocuments/${req.file.filename}`,
       findSubCategory.links = null;
       findSubCategory.content = null;
       findSubCategory.save();
