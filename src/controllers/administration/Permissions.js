@@ -1,5 +1,4 @@
 const Roles = require("../../models/administration/Permissions");
-const Admin = require("../../models/administration/admin");
 const Staff = require("../../models/administration/staff");
 
 const { rolesValidation } = require("../../services/rolesValidation");

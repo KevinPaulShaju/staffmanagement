@@ -3,7 +3,6 @@ const app = express();
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./database/database");
-const adminRoutes = require("./routes/administration/admin");
 const staffRoutes = require("./routes/administration/manageStaffs");
 const endUserRoutes = require("./routes/user/EndUser");
 const staffPhoto = require("./routes/administration/photo");
@@ -42,8 +41,6 @@ app.use("/api/staff", staffRoutes);
 app.use("/api/staff/photo", staffPhoto);
 
 app.use("/api/carer/document", carerDocumentRoutes);
-
-app.use("/api/admin", adminRoutes);
 
 app.use("/api/user", endUserRoutes);
 

@@ -1,4 +1,5 @@
 const Services = require("../../models/administration/Services");
+const { serviceValidation } = require("../../services/serviceValidation");
 
 exports.insertToServices = async (req, res) => {
   const {
@@ -16,21 +17,9 @@ exports.insertToServices = async (req, res) => {
     tax,
   } = req.body;
 
-  if (
-    !serviceName ||
-    !serviceCode ||
-    !weekdayEarly ||
-    !weekdayNormal ||
-    !weekdayLate ||
-    !weekendEarly ||
-    !weekendNormal ||
-    !weekendLate ||
-    !publicHolidayEarly ||
-    !publicHolidayNormal ||
-    !publicHolidayLate ||
-    !tax
-  ) {
-    return res.status(400).json({ error: "All The Fields are Required" });
+  const { error } = serviceValidation(req.body);
+  if (error) {
+    return res.status(406).json({ error: error.details[0].message });
   }
 
   try {
@@ -82,7 +71,11 @@ exports.updateServices = async (req, res) => {
       $set: req.body,
     };
 
-    const updatedServices = await Services.findOneAndUpdate({ _id: serviceId },query,{ new: true });
+    const updatedServices = await Services.findOneAndUpdate(
+      { _id: serviceId },
+      query,
+      { new: true }
+    );
     res.status(200).json({
       message: "Service has been updated successfully",
       updatedServices: updatedServices,

@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
 const RolesSchema = new mongoose.Schema({
   staffId: {
     type: mongoose.Schema.Types.ObjectId,
