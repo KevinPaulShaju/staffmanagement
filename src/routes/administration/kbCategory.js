@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { ensureAdmin } = require("../../middlewares/auth");
 const {
   addCategory,
   deleteCategories,

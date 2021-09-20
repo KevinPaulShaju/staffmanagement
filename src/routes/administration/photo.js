@@ -4,17 +4,20 @@ const fs = require("fs");
 const Staff = require("../../models/administration/staff");
 const { uploadStaff } = require("../../helpers/photo");
 
-router.post("/add/:staffId",uploadStaff.single("photo"),async (req, res) => {
+router.post(
+  "/add/:staffId",
+  uploadStaff.single("photo"),
+  async (req, res) => {
     console.log(req.file);
 
     const _id = req.params.staffId;
 
-    if(!_id) {
-      return res.status(400).json({error:"Id Required"});
+    if (!_id) {
+      return res.status(400).json({ error: "Id Required" });
     }
 
-    if(!req.file){
-      return res.status(400).json({error:"Please Upload a Photo"})
+    if (!req.file) {
+      return res.status(400).json({ error: "Please Upload a Photo" });
     }
 
     const findStaff = await Staff.findOne({ _id });
@@ -46,7 +49,9 @@ router.post("/add/:staffId",uploadStaff.single("photo"),async (req, res) => {
       message: "photo upload successful",
       profileUrl: `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`,
     });
-    console.log(`https://careflo.herokuapp.com/profile/staff/${req.file.filename}`);
+    console.log(
+      `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`
+    );
   },
   (err, req, res, next) => {
     return res.status(400).send({ success: 0, error: err.message });
@@ -58,8 +63,8 @@ router.get("/show/:staffId", async (req, res) => {
   try {
     //
     const _id = req.params.staffId;
-    if(!_id) {
-      return res.status(400).json({error:"Id Required"});
+    if (!_id) {
+      return res.status(400).json({ error: "Id Required" });
     }
 
     const findStaff = await Staff.findOne({ _id });
@@ -81,10 +86,10 @@ router.get("/remove/:staffId", async (req, res) => {
   try {
     //
     const _id = req.params.staffId;
-    if(!_id) {
-      return res.status(400).json({error:"Id Required"});
+    if (!_id) {
+      return res.status(400).json({ error: "Id Required" });
     }
-    
+
     const findStaff = await Staff.findOne({ _id });
 
     if (!findStaff) {
