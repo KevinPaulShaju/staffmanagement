@@ -1,5 +1,6 @@
 const express = require("express");
 var validUrl = require('valid-url');
+const fs = require('fs');
 const router = express.Router();
 const {kbDocuments} = require("../../helpers/photo");
 const Category = require("../../models/administration/kbCategory");
@@ -31,7 +32,7 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
             newSubCategory = new Subcategory({
               categoryId,
               subcategoryName,
-              dataPath: `http://localhost:5000/kbdocuments/${req.file.filename}`,
+              documents: `http://localhost:5000/kbdocuments/${req.file.filename}`,
             });
             savedSubCategory = await newSubCategory.save();
             return res.status(201).json({
@@ -43,7 +44,7 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
         if(!validUrl.isUri(document)){
           newSubCategory = new Subcategory({
             categoryId,subcategoryName,
-            text: document
+            content: document
           })
           savedSubCategory = await newSubCategory.save();
           return res.status(201).json({
@@ -54,7 +55,7 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
 
         newSubCategory = new Subcategory({
             categoryId,subcategoryName,
-            dataPath:document
+            links:document
         });
         savedSubCategory = await newSubCategory.save();
         return res.status(201).json({
@@ -71,7 +72,84 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
     }
 });
 
+router.post("/update/document/:subcategoryId",kbDocuments.single("document"),async(req, res)=>{
+  
+  try {
+    const _id = req.params.subcategoryId;
+    const {document} = req.body
+    var newSubCategory,savedSubCategory
+    if(!document && !req.file){
+      return res.status(400).json({error: "This Field Can not be Blank"});
+    }
+    const findSubCategory = await Subcategory.findOne({_id});
+    if(!findSubCategory){
+      return res.status(404).json({error:"Sub-Category Not Found"})
+    }
 
+    if(findSubCategory.documents !== null){
+      const kbDocument = findSubCategory.documents;
+      var fields = kbDocument.split("/");
+      const documentKb = fields[fields.length - 1];
+
+      fs.unlink(`./uploads/kbdocuments/${documentKb}`,(err)=>{
+        if(err){
+          return res.status(400).json({error: err.message});
+        }
+      })
+
+      if(req.file){
+        findSubCategory.documents = `http://localhost:5000/kbdocuments/${req.file.filename}`,
+        findSubCategory.links = null;
+        findSubCategory.content = null;
+        findSubCategory.save();
+        return res.status(201).json({message: "Sub Updated successfully"})
+      }
+      if(!validUrl.isUri(document)){
+        findSubCategory.content = document;
+        findSubCategory.documents = null;
+        findSubCategory.links = null;
+        findSubCategory.save();
+        return res.status(201).json({message: "Sub Updated successfully"})
+      }
+      findSubCategory.links = document
+      findSubCategory.content = null;
+      findSubCategory.documents = null;
+      findSubCategory.save();
+      return res.status(201).json({message: "Sub Updated successfully"})
+    }
+
+    if(req.file){
+      findSubCategory.documents = `http://localhost:5000/kbdocuments/${req.file.filename}`,
+      findSubCategory.links = null;
+      findSubCategory.content = null;
+      findSubCategory.save();
+      return res.status(201).json({message: "Sub Updated successfully"})
+    }
+
+
+    if(!validUrl.isUri(document)){
+      findSubCategory.content = document;
+      findSubCategory.documents = null;
+      findSubCategory.links = null;
+      findSubCategory.save();
+      return res.status(201).json({message: "Sub Updated successfully"})
+    }
+
+   
+    findSubCategory.links = document
+    findSubCategory.content = null;
+    findSubCategory.documents = null;
+    findSubCategory.save();
+    return res.status(201).json({message: "Sub Updated successfully"})
+
+    
+  } catch (e) {
+    res.status(500).json({
+      error: e.message,
+      message: "Internal Server Error"
+    });
+  }
+});
 
 
 
@@ -149,6 +227,21 @@ router.get("/view/:subCategoryId",async (req, res) => {
   
       if (!existingSubCategory) {
         return res.status(404).json({ error: "Knowledge base sub category does not exist" });
+      }
+
+      if (existingSubCategory.documents !== null) {
+        const kbDocument = existingSubCategory.documents;
+        var fields = kbDocument.split("/");
+        const documentKb = fields[fields.length - 1];
+  
+        fs.unlink(`./uploads/kbdocuments/${documentKb}`,async (err) => {
+          if (err) {
+            return res.status(400).json({ error: err.message });
+          }
+          await existingSubCategory.remove();
+        });
+  
+        return res.status(200).json({ message: "Sub category has been removed" });
       }
   
       await existingSubCategory.remove();
