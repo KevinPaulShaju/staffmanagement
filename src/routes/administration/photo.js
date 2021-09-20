@@ -4,7 +4,7 @@ const fs = require("fs");
 const Staff = require("../../models/administration/staff");
 const { uploadStaff } = require("../../helpers/photo");
 
-router.post("/add",uploadStaff.single("photo"),async (req, res) => {
+router.post("/add/:staffId",uploadStaff.single("photo"),async (req, res) => {
     console.log(req.file);
 
     const _id = req.params.staffId;
@@ -32,21 +32,21 @@ router.post("/add",uploadStaff.single("photo"),async (req, res) => {
         if (err) {
           return res.status(400).json({ error: err.message });
         }
-        findStaff.photo = `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`;
+        findStaff.photo = `http://localhost:5000/profile/staff/${req.file.filename}`;
         findStaff.save();
       });
 
       return res.status(200).json({ success: 1, message: findStaff.photo });
     }
 
-    findStaff.photo = `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`;
+    findStaff.photo = `http://localhost:5000/profile/staff/${req.file.filename}`;
     findStaff.save();
 
     res.status(200).json({
       message: "photo upload successful",
-      profileUrl: `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`,
+      profileUrl: `http://localhost:5000/profile/staff/${req.file.filename}`,
     });
-    console.log(`https://careflo.herokuapp.com/profile/staff/${req.file.filename}`);
+    console.log(`http://localhost:5000/profile/staff/${req.file.filename}`);
   },
   (err, req, res, next) => {
     return res.status(400).send({ success: 0, error: err.message });
