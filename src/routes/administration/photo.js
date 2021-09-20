@@ -4,7 +4,7 @@ const fs = require("fs");
 const Staff = require("../../models/administration/staff");
 const { uploadStaff } = require("../../helpers/photo");
 
-router.post("/add/:staffId",uploadStaff.single("photo"),async (req, res) => {
+router.post("/add",uploadStaff.single("photo"),async (req, res) => {
     console.log(req.file);
 
     const _id = req.params.staffId;
