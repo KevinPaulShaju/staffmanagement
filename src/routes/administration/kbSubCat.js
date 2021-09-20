@@ -6,6 +6,7 @@ const Category = require("../../models/administration/kbCategory");
 const Subcategory = require("../../models/administration/kbSubcategory");
 
 
+
 router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) => {
     try {
         const categoryId = req.params.categoryId;
