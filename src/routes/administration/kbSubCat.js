@@ -1,4 +1,5 @@
 const express = require("express");
+var validUrl = require('valid-url');
 const router = express.Router();
 const {kbDocuments} = require("../../helpers/photo");
 const Category = require("../../models/administration/kbCategory");
@@ -9,6 +10,7 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
     try {
         const categoryId = req.params.categoryId;
         const { subcategoryName,document } = req.body;
+        var newSubCategory,savedSubCategory
         if(!categoryId){
             return res.status(400).json({error: "CategoryId Should be Provided"});
         }
@@ -25,23 +27,35 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
         }
 
         if(req.file){
-            const newSubCategory = new Subcategory({
+            newSubCategory = new Subcategory({
               categoryId,
               subcategoryName,
-              dataPath: `https://careflo.herokuapp.com/kbdocuments/${req.file.filename}`,
+              dataPath: `http://localhost:5000/kbdocuments/${req.file.filename}`,
             });
-            const savedSubCategory = await newSubCategory.save();
+            savedSubCategory = await newSubCategory.save();
             return res.status(201).json({
                 message: "Sub Document saved successfully",
                 result: savedSubCategory
             })
         }
 
-        const subCategoryNew = new Subcategory({
+        if(!validUrl.isUri(document)){
+          newSubCategory = new Subcategory({
+            categoryId,subcategoryName,
+            text: document
+          })
+          savedSubCategory = await newSubCategory.save();
+          return res.status(201).json({
+            message: "Sub Document saved successfully",
+            result: savedSubCategory
+          })
+        }
+
+        newSubCategory = new Subcategory({
             categoryId,subcategoryName,
             dataPath:document
         });
-        const savedSubCategory = await subCategoryNew.save();
+        savedSubCategory = await newSubCategory.save();
         return res.status(201).json({
             message: "Sub Document saved successfully",
             result: savedSubCategory
@@ -55,6 +69,9 @@ router.post("/add/:categoryId",kbDocuments.single("document"),async (req,res) =>
         });
     }
 });
+
+
+
 
 
 
