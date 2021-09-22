@@ -8,14 +8,46 @@ const RolesSchema = new mongoose.Schema({
     ref: "Staff",
   },
   name: { type: String },
-  adminModule: { type: Boolean, enum: [true, false], default: false },
-  staffModule: { type: Boolean, enum: [true, false], default: false },
-  careTakerModule: { type: Boolean, enum: [true, false], default: false },
-  patientModule: { type: Boolean, enum: [true, false], default: false },
-  scheduleModule: { type: Boolean, enum: [true, false], default: false },
-  financeModule: { type: Boolean, enum: [true, false], default: false },
-  ndisModule: { type: Boolean, enum: [true, false], default: false },
-  nagModule: { type: Boolean, enum: [true, false], default: false },
+  adminModule: {
+    enabled: { type: Boolean, enum: [true, false], default: false },
+    read: { type: Boolean, enum: [true, false], default: false },
+    write: { type: Boolean, enum: [true, false], default: false },
+  },
+  staffModule: {
+    enabled: { type: Boolean, enum: [true, false], default: false },
+    read: { type: Boolean, enum: [true, false], default: false },
+    write: { type: Boolean, enum: [true, false], default: false },
+  },
+  careTakerModule: {
+    enabled: { type: Boolean, enum: [true, false], default: false },
+    read: { type: Boolean, enum: [true, false], default: false },
+    write: { type: Boolean, enum: [true, false], default: false },
+  },
+  patientModule: {
+    enabled: { type: Boolean, enum: [true, false], default: false },
+    read: { type: Boolean, enum: [true, false], default: false },
+    write: { type: Boolean, enum: [true, false], default: false },
+  },
+  scheduleModule: {
+    enabled: { type: Boolean, enum: [true, false], default: false },
+    read: { type: Boolean, enum: [true, false], default: false },
+    write: { type: Boolean, enum: [true, false], default: false },
+  },
+  financeModule: {
+    enabled: { type: Boolean, enum: [true, false], default: false },
+    read: { type: Boolean, enum: [true, false], default: false },
+    write: { type: Boolean, enum: [true, false], default: false },
+  },
+  ndisModule: {
+    enabled: { type: Boolean, enum: [true, false], default: false },
+    read: { type: Boolean, enum: [true, false], default: false },
+    write: { type: Boolean, enum: [true, false], default: false },
+  },
+  nagModule: {
+    enabled: { type: Boolean, enum: [true, false], default: false },
+    read: { type: Boolean, enum: [true, false], default: false },
+    write: { type: Boolean, enum: [true, false], default: false },
+  },
 });
 
 const Roles = new mongoose.model("Roles", RolesSchema);

@@ -1,16 +1,50 @@
 const Joi = require("joi");
 
 const rolesValidation = (data) => {
-  const schema = Joi.object({
-    adminModule: Joi.boolean().required(),
-    staffModule: Joi.boolean().required(),
-    financeModule: Joi.boolean().required(),
-    ndisModule: Joi.boolean().required(),
-    nagModule: Joi.boolean().required(),
-    careTakerModule: Joi.boolean().required(),
-    patientModule: Joi.boolean().required(),
-    scheduleModule: Joi.boolean().required(),
-  });
+  const schema = Joi.object()
+    .required()
+    .keys({
+      adminModule: Joi.object({
+        enabled: Joi.boolean().default(false),
+        read: Joi.boolean().default(false),
+        write: Joi.boolean().default(false),
+      }).required(),
+      staffModule: Joi.object({
+        enabled: Joi.boolean().default(false),
+        read: Joi.boolean().default(false),
+        write: Joi.boolean().default(false),
+      }).required(),
+      financeModule: Joi.object({
+        enabled: Joi.boolean().default(false),
+        read: Joi.boolean().default(false),
+        write: Joi.boolean().default(false),
+      }).required(),
+      ndisModule: Joi.object({
+        enabled: Joi.boolean().default(false),
+        read: Joi.boolean().default(false),
+        write: Joi.boolean().default(false),
+      }).required(),
+      nagModule: Joi.object({
+        enabled: Joi.boolean().default(false),
+        read: Joi.boolean().default(false),
+        write: Joi.boolean().default(false),
+      }).required(),
+      careTakerModule: Joi.object({
+        enabled: Joi.boolean().default(false),
+        read: Joi.boolean().default(false),
+        write: Joi.boolean().default(false),
+      }).required(),
+      patientModule: Joi.object({
+        enabled: Joi.boolean().default(false),
+        read: Joi.boolean().default(false),
+        write: Joi.boolean().default(false),
+      }).required(),
+      scheduleModule: Joi.object({
+        enabled: Joi.boolean().default(false),
+        read: Joi.boolean().default(false),
+        write: Joi.boolean().default(false),
+      }).required(),
+    });
 
   return schema.validate(data);
 };
