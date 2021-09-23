@@ -31,10 +31,6 @@ exports.registerUsers = async (req, res) => {
     secondaryContactRelationship,
     secondaryContactAddress,
     taxFileNumber,
-    maidenName,
-    isNDIC,
-    isReffered,
-    preferredName,
   } = req.body;
 
   const { error } = userValidation(req.body);
@@ -56,6 +52,7 @@ exports.registerUsers = async (req, res) => {
     const savedUser = await newUser.save();
     res.status(200).json({
       message: `User staff has been successfully registered.`,
+      result: savedUser,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });

@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const UserReport = require("../../models/user/reportuser");
+const Schedules = require("../schedules/schedules");
 
 const EndUserSchema = mongoose.Schema({
   firstName: { type: String, required: true },
@@ -51,6 +52,14 @@ EndUserSchema.pre("remove", async function (next) {
   const userReports = await UserReport.find({ endUserId: this._id });
   if (userReports || userReports.length !== 0) {
     await UserReport.deleteMany({ endUserId: this._id });
+  }
+  next();
+});
+
+EndUserSchema.pre("remove", async function (next) {
+  const userSchedules = await Schedules.find({ userId: this._id });
+  if (userSchedules || userSchedules.length !== 0) {
+    await Schedules.deleteMany({ userId: this._id });
   }
   next();
 });

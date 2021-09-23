@@ -90,6 +90,7 @@ exports.createStaff = async (req, res) => {
       staffId: savedStaff._id,
       name: savedStaff.name,
     });
+    console.log(newPermissions);
 
     const roleExists = await Roles.findOne({ role: role });
     if (!roleExists) {
