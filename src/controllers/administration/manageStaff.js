@@ -5,10 +5,11 @@ const {
 } = require("../../services/staffValidation");
 const { rolesValidation } = require("../../services/rolesValidation");
 const Staff = require("../../models/administration/staff");
-const Roles = require("../../models/administration/Permissions");
+const Permissions = require("../../models/administration/Permissions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const Roles = require("../../models/administration/Roles");
 
 //Create staff
 exports.createStaff = async (req, res) => {
@@ -84,12 +85,19 @@ exports.createStaff = async (req, res) => {
     }
     const savedStaff = await newStaff.save();
 
-    const newRoles = new Roles({
+    const newPermissions = new Permissions({
       ...req.body.permissions,
       staffId: savedStaff._id,
       name: savedStaff.name,
     });
-    const savedRole = await newRoles.save();
+
+    const roleExists = await Roles.findOne({ role: role });
+    if (!roleExists) {
+      const newRole = new Roles({ role: role });
+      await newRole.save();
+    }
+
+    const savedPermissions = await newPermissions.save();
     res.status(200).json({
       message: `${role} staff has been successfully registered.`,
     });
@@ -127,7 +135,9 @@ exports.staffLogin = async (req, res) => {
       });
     }
 
-    const roleModules = await Roles.findOne({ staffId: existingStaff._id });
+    const roleModules = await Permissions.findOne({
+      staffId: existingStaff._id,
+    });
 
     // jwt authorization
     const key = process.env.JWT_SECRET;
@@ -172,7 +182,7 @@ exports.updateStaffDetails = async (req, res) => {
 
     let query2 = { $set: req.body.permissions };
 
-    const updatedRoles = await Roles.findOneAndUpdate(
+    const updatedPermissions = await Permissions.findOneAndUpdate(
       {
         staffId: existingStaff._id,
       },
@@ -183,7 +193,7 @@ exports.updateStaffDetails = async (req, res) => {
     res.status(200).json({
       message: "Update Successfully",
       updatedStaff: updatedStaff,
-      updatedRoles: updatedRoles,
+      updatedPermissions: updatedPermissions,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -293,7 +303,7 @@ exports.staffProfile = async (req, res) => {
     if (!findStaff) {
       return res.status(404).json({ error: "Staff not found" });
     }
-    const permissions = await Roles.findOne({ staffId: findStaff._id });
+    const permissions = await Permissions.findOne({ staffId: findStaff._id });
     if (!permissions) {
       res.status(404).json({ error: "Missing permissions data" });
     }

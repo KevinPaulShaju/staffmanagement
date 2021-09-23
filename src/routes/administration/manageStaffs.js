@@ -13,6 +13,7 @@ const {
 const upload = require("../../helpers/photo");
 
 const { changeRoles } = require("../../controllers/administration/Permissions");
+const { getAllRoles } = require("../../controllers/administration/roles");
 
 const {
   authenticateUser,
@@ -84,11 +85,19 @@ router.get("/view/staffs/all", viewAllStaffs);
 router.get("/view/staff/:staffId", staffProfile);
 
 /**
- * @description edit staff roles
+ * @description edit staff permissions
  * @method POST
  * @route /staff/roles/:staffId?role=role
  **/
 
-router.post("/roles/:staffId", changeRoles);
+router.post("/permissions/:staffId", changeRoles);
+
+/**
+ * @description get staff roles
+ * @method GET
+ * @route /staff/roles/:staffId?role=role
+ **/
+
+router.get("/roles/get/all", getAllRoles);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const RolesSchema = new mongoose.Schema({
+const PermissionsSchema = new mongoose.Schema({
   staffId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -50,5 +50,5 @@ const RolesSchema = new mongoose.Schema({
   },
 });
 
-const Roles = new mongoose.model("Roles", RolesSchema);
-module.exports = Roles;
+const Permissions = new mongoose.model("Permissions", PermissionsSchema);
+module.exports = Permissions;
