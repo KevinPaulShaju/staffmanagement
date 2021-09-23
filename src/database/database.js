@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  const DB = process.env.MONGO_URL
-  // const DB = "mongodb://127.0.0.1:27017/staff";
+  // const DB = process.env.MONGO_URL
+  const DB = "mongodb://127.0.0.1:27017/staff";
   try {
     const conn = await mongoose.connect(DB, {
       useNewUrlParser: true,
