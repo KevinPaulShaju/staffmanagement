@@ -32,6 +32,17 @@ const StaffSchema = new mongoose.Schema({
   bankId: { type: Number, required: true },
   taxFileNumber: { type: Number, required: true },
   status: { type: String },
+  active: {
+    schedule: {
+      to: { type: Date },
+      from: { type: Date },
+      location: {
+        latitude: { type: Number, required: true },
+        longitude: { type: Number, required: true },
+      },
+    },
+    working: { type: Boolean },
+  },
 });
 
 //Hashing the Password
@@ -59,7 +70,6 @@ StaffSchema.pre("remove", async function (next) {
   }
   next();
 });
-
 
 const Staff = mongoose.model("Staff", StaffSchema);
 module.exports = Staff;

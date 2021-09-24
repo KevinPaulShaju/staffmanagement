@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const Modules = {
+  enabled: { type: Boolean, enum: [true, false], default: false },
+  read: { type: Boolean, enum: [true, false], default: false },
+  write: { type: Boolean, enum: [true, false], default: false },
+};
+
 const PermissionsSchema = new mongoose.Schema({
   staffId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -8,46 +14,14 @@ const PermissionsSchema = new mongoose.Schema({
     ref: "Staff",
   },
   name: { type: String },
-  adminModule: {
-    enabled: { type: Boolean, enum: [true, false], default: false },
-    read: { type: Boolean, enum: [true, false], default: false },
-    write: { type: Boolean, enum: [true, false], default: false },
-  },
-  staffModule: {
-    enabled: { type: Boolean, enum: [true, false], default: false },
-    read: { type: Boolean, enum: [true, false], default: false },
-    write: { type: Boolean, enum: [true, false], default: false },
-  },
-  careTakerModule: {
-    enabled: { type: Boolean, enum: [true, false], default: false },
-    read: { type: Boolean, enum: [true, false], default: false },
-    write: { type: Boolean, enum: [true, false], default: false },
-  },
-  patientModule: {
-    enabled: { type: Boolean, enum: [true, false], default: false },
-    read: { type: Boolean, enum: [true, false], default: false },
-    write: { type: Boolean, enum: [true, false], default: false },
-  },
-  scheduleModule: {
-    enabled: { type: Boolean, enum: [true, false], default: false },
-    read: { type: Boolean, enum: [true, false], default: false },
-    write: { type: Boolean, enum: [true, false], default: false },
-  },
-  financeModule: {
-    enabled: { type: Boolean, enum: [true, false], default: false },
-    read: { type: Boolean, enum: [true, false], default: false },
-    write: { type: Boolean, enum: [true, false], default: false },
-  },
-  ndisModule: {
-    enabled: { type: Boolean, enum: [true, false], default: false },
-    read: { type: Boolean, enum: [true, false], default: false },
-    write: { type: Boolean, enum: [true, false], default: false },
-  },
-  nagModule: {
-    enabled: { type: Boolean, enum: [true, false], default: false },
-    read: { type: Boolean, enum: [true, false], default: false },
-    write: { type: Boolean, enum: [true, false], default: false },
-  },
+  adminModule: Modules,
+  staffModule: Modules,
+  careTakerModule: Modules,
+  patientModule: Modules,
+  scheduleModule: Modules,
+  financeModule: Modules,
+  ndisModule: Modules,
+  nagModule: Modules,
 });
 
 const Permissions = new mongoose.model("Permissions", PermissionsSchema);

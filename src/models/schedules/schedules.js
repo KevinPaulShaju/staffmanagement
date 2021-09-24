@@ -8,19 +8,16 @@ const schedulesSchema = new mongoose.Schema({
     ref: "Staff",
     default: null,
   },
+  assigned: { type: Boolean, default: false },
   past: { type: Boolean, default: false },
   from: { type: Date },
   to: { type: Date },
-  userLocation: { 
-    coordinates: {
-      latitude: { type: Number, required: true },
-      longitude: { type: Number, required: true },
-    },
+  userLocation: {
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
   },
-  job: {type:String}
+  job: { type: String },
 });
-
-
 
 // schedulesSchema.methods.toJSON = function() {
 //   const schedule = this

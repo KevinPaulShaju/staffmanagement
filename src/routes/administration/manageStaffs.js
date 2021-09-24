@@ -98,6 +98,4 @@ router.post("/permissions/:staffId", changeRoles);
  * @route /staff/roles/:staffId?role=role
  **/
 
-router.get("/roles/get/all", getAllRoles);
-
 module.exports = router;

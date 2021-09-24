@@ -9,7 +9,6 @@ const Permissions = require("../../models/administration/Permissions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
-const Roles = require("../../models/administration/Roles");
 
 //Create staff
 exports.createStaff = async (req, res) => {
@@ -91,12 +90,6 @@ exports.createStaff = async (req, res) => {
       name: savedStaff.name,
     });
     console.log(newPermissions);
-
-    const roleExists = await Roles.findOne({ role: role });
-    if (!roleExists) {
-      const newRole = new Roles({ role: role });
-      await newRole.save();
-    }
 
     const savedPermissions = await newPermissions.save();
     res.status(200).json({
