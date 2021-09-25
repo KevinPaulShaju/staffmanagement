@@ -29,21 +29,21 @@ router.post("/add/:userId",uploadUser.single("photo"),async (req, res) => {
         if (err) {
           return res.status(400).json({ error: err.message });
         }
-        findUser.photo = `https://careflo.herokuapp.com/profile/user/${req.file.filename}`;
-        findUser.save();
       });
+      findUser.photo = `http://localhost:5000/profile/user/${req.file.filename}`
+      findUser.save();
 
-      return res.status(200).json({ success: 1, message: findUser.photo });
+      return res.status(200).json({ success: 1, profileUrl: findUser.photo });
     }
 
-    findUser.photo = `https://careflo.herokuapp.com/profile/user/${req.file.filename}`;
+    findUser.photo = `http://localhost:5000/profile/user/${req.file.filename}`
     findUser.save();
 
     res.status(200).json({
       message: "photo upload successful",
-      profileUrl: `https://careflo.herokuapp.com/profile/user/${req.file.filename}`,
+      profileUrl:findUser.photo,
     });
-    console.log(`https://careflo.herokuapp.com/profile/user/${req.file.filename}`);
+    console.log(findUser.photo);
   },
   (err, req, res, next) => {
     return res.status(400).send({ success: 0, error: err.message });
