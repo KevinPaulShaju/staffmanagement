@@ -1,28 +1,17 @@
 const multer = require("multer");
 const sharp = require("sharp");
 const path = require("path");
+const aws = require('aws-sdk');
+const multerS3 = require('multer-s3');
 
-const storageStaff = multer.diskStorage({
-    destination: "./uploads/images/staff/",
-
-    filename: function (req, file, cb) {
-        return cb(
-            null,
-            `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`
-        );
-    },
+aws.config.update({
+    secretAccessKey: process.env.SECERET_ACCESS_KEY,
+    accessKeyId: process.env.KEY_ID,
+    region: 'ap-south-1'
 });
 
-const storageUser = multer.diskStorage({
-    destination: "./uploads/images/user/",
 
-    filename: function (req, file, cb) {
-        return cb(
-            null,
-            `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`
-        );
-    },
-});
+var s3 = new aws.S3();
 
 const storageKbDocuments = multer.diskStorage({
     destination: "./uploads/kbdocuments/",
@@ -32,12 +21,24 @@ const storageKbDocuments = multer.diskStorage({
     },
 });
 
+
 const uploadStaff = multer({
-    storage: storageStaff,
-    limits: {
+    storage: multerS3({
+        s3: s3,
+        bucket: 'photostaffs',
+        acl:'public-read',
+        metadata: function(req, res,cb){
+            return cb(null,{fieldname:'User Photo'});
+        },
+        key: function (req, file, cb) {
+            console.log(file);
+            return cb(null,`${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
+        }
+        
+    }),
+    limits:{
         fileSize: 5000000,
     },
-    abortOnLimit: true,
     fileFilter(req, file, cb,next) {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
             return cb(new Error("Please Upload a Photo"));
@@ -49,11 +50,22 @@ const uploadStaff = multer({
 
 
 const uploadUser = multer({
-    storage: storageUser,
-    limits: {
+    storage: multerS3({
+        s3: s3,
+        bucket: 'photousers',
+        acl:'public-read',
+        metadata: function(req, res,cb){
+            return cb(null,{fieldname:'User Photo'});
+        },
+        key: function (req, file, cb) {
+            console.log(file);
+            return cb(null,`${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
+        }
+        
+    }),
+    limits:{
         fileSize: 5000000,
     },
-    abortOnLimit: true,
     fileFilter(req, file, cb,next) {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
             return cb(new Error("Please Upload a Photo"));
@@ -62,6 +74,8 @@ const uploadUser = multer({
         
     },
 });
+
+
 
 
 const kbDocuments = multer({
@@ -80,4 +94,4 @@ const kbDocuments = multer({
 });
 
 
-module.exports = {uploadStaff,uploadUser,kbDocuments};
+module.exports = {uploadStaff,uploadUser,kbDocuments,s3};

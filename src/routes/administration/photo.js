@@ -2,12 +2,10 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const Staff = require("../../models/administration/staff");
-const { uploadStaff } = require("../../helpers/photo");
+const { uploadStaff,s3 } = require("../../helpers/photo");
 
-router.post(
-  "/add/:staffId",
-  uploadStaff.single("photo"),
-  async (req, res) => {
+
+router.post("/add/:staffId",uploadStaff.single("photo"),async (req, res) => {
     console.log(req.file);
 
     const _id = req.params.staffId;
@@ -19,6 +17,8 @@ router.post(
     if (!req.file) {
       return res.status(400).json({ error: "Please Upload a Photo" });
     }
+    const fileLocation = req.file.location
+
 
     const findStaff = await Staff.findOne({ _id });
 
@@ -31,27 +31,26 @@ router.post(
       var fields = profilePic.split("/");
       const profilePhoto = fields[fields.length - 1];
 
-      fs.unlink(`./uploads/images/staff/${profilePhoto}`, (err) => {
-        if (err) {
-          return res.status(400).json({ error: err.message });
-        }
-        findStaff.photo = `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`;
-        findStaff.save();
-      });
-
-      return res.status(200).json({ success: 1, message: findStaff.photo });
+      var params = {Bucket:'photostaffs',Key:profilePhoto};
+      s3.deleteObject(params,async (err, res) => {
+          if(err){
+              return res.status(400).json({message:err.message});
+          }
+      })
+      findStaff.photo = req.file.location;
+      await findStaff.save();
+      return res.status(200).json({
+        message: "Profile Photo Updated successfully",
+        profileUrl: findStaff.photo
+      })
     }
 
-    findStaff.photo = `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`;
+    findStaff.photo = fileLocation;
     findStaff.save();
 
-    res.status(200).json({
-      message: "photo upload successful",
-      profileUrl: `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`,
-    });
-    console.log(
-      `https://careflo.herokuapp.com/profile/staff/${req.file.filename}`
-    );
+    res.status(200).json({ message: "photo upload successful",profileUrl: findStaff.photo});
+
+    console.log(findStaff.photo);
   },
   (err, req, res, next) => {
     return res.status(400).send({ success: 0, error: err.message });
@@ -103,19 +102,19 @@ router.get("/remove/:staffId", async (req, res) => {
     var fields = profilePic.split("/");
     const profilePhoto = fields[fields.length - 1];
 
-    fs.unlink(`./uploads/images/staff/${profilePhoto}`, async (err) => {
-      if (err) {
-        return res.status(400).json({ error: err.message });
-      }
-      findStaff.photo = null;
-      await findStaff.save();
-    });
+    var params = {Bucket:'photostaffs',Key:profilePhoto};
+    s3.deleteObject(params,async (err, res) => {
+        if(err){
+            return res.status(400).json({message:err.message});
+        }
+    })
+
+    findStaff.photo = null;
+    await findStaff.save();
 
     res.status(200).json({ success: 1, message: "Profile Photo Removed" });
   } catch (e) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: e.message });
+    res.status(500).json({ message: "Internal Server Error", error: e.message });
   }
 });
 

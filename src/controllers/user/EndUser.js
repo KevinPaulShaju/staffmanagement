@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const User = require("../../models/user/user");
+const {s3} = require("../../helpers/photo")
 const { passwordValidation } = require("../../services/staffValidation");
 const {
   userUpdateValidation,
@@ -211,18 +212,23 @@ exports.deleteuser = async (req, res) => {
       return res.status(404).json({ error: "This user does not exist" });
     }
 
-    if (existingUser.photo !== null) {
+    if(existingUser.photo !== null){
       const profilePic = existingUser.photo;
       var fields = profilePic.split("/");
       const profilePhoto = fields[fields.length - 1];
 
-      fs.unlink(`./uploads/images/user/${profilePhoto}`, async (err) => {
-        if (err) {
-          return res.status(400).json({ error: err.message });
-        }
-        await existingUser.remove();
-      });
+      var params = {Bucket:'photousers',Key:profilePhoto};
+      s3.deleteObject(params,async (err, res) => {
+          if(err){
+              return res.status(400).json({message:err.message});
+          }
+      })
+      
+      await existingUser.remove();
+      return res.status(200).json({message:"User has been removed"})
     }
+
+
     await existingUser.remove();
     res.status(200).json({ message: "User has been removed" });
   } catch (error) {

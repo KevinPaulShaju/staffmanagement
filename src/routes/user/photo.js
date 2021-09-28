@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const User = require("../../models/user/user");
-const { uploadUser } = require("../../helpers/photo");
+const { uploadUser,s3 } = require("../../helpers/photo");
 
 router.post("/add/:userId",uploadUser.single("photo"),async (req, res) => {
     console.log(req.file);
@@ -14,35 +14,37 @@ router.post("/add/:userId",uploadUser.single("photo"),async (req, res) => {
     if(!req.file){
       return res.status(400).json({error:"Please Upload a Photo"})
     }
+
+    const fileLocation = req.file.location
     const findUser = await User.findOne({ _id });
 
     if (!findUser) {
       return res.status(404).json({ error: "User Not Found" });
     }
 
-    if (findUser.photo !== null) {
+    if(findUser.photo !== null){
       const profilePic = findUser.photo;
       var fields = profilePic.split("/");
       const profilePhoto = fields[fields.length - 1];
 
-      fs.unlink(`./uploads/images/user/${profilePhoto}`, (err) => {
-        if (err) {
-          return res.status(400).json({ error: err.message });
-        }
-      });
-      findUser.photo = `http://localhost:5000/profile/user/${req.file.filename}`
-      findUser.save();
+      var params = {Bucket:'photousers',Key:profilePhoto};
+      s3.deleteObject(params,async (err, res) => {
+          if(err){
+              return res.status(400).json({message:err.message});
+          }
+      })
+      findUser.photo = req.file.location;
+      await findUser.save();
+      return res.status(200).json({
+        message: "Profile Photo Updated successfully",
+        profileUrl: findUser.photo
+      })
+  }
 
-      return res.status(200).json({ success: 1, profileUrl: findUser.photo });
-    }
-
-    findUser.photo = `http://localhost:5000/profile/user/${req.file.filename}`
+    findUser.photo = fileLocation;
     findUser.save();
 
-    res.status(200).json({
-      message: "photo upload successful",
-      profileUrl:findUser.photo,
-    });
+    res.status(200).json({message: "photo upload successful",profileUrl:findUser.photo,});
     console.log(findUser.photo);
   },
   (err, req, res, next) => {
@@ -67,9 +69,7 @@ router.get("/show/:userId", async (req, res) => {
 
     res.status(200).json({ message: findUser.photo });
   } catch (e) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: e.message });
+    res.status(500).json({ message: "Internal Server Error", error: e.message });
   }
 });
 
@@ -94,13 +94,16 @@ router.get("/remove/:userId", async (req, res) => {
     var fields = profilePic.split("/");
     const profilePhoto = fields[fields.length - 1];
 
-    fs.unlink(`./uploads/images/user/${profilePhoto}`, async (err) => {
-      if (err) {
-        return res.status(400).json({ error: err.message });
+    var params = {Bucket:'photousers',Key:profilePhoto};
+    s3.deleteObject(params,async (err, res) => {
+      if(err){
+          return res.status(400).json({message:err.message});
       }
-      findUser.photo = null;
-      await findUser.save();
-    });
+    })
+
+    findUser.photo = null;
+    await findUser.save();
+    
 
     res.status(200).json({ success: 1, message: "Profile Photo Removed" });
   } catch (e) {
