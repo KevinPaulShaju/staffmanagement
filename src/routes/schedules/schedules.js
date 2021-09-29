@@ -46,7 +46,7 @@ router.get("/remove/all/:userId", toRemoveAllSchedulesofAUser);
 router.get("/remove/:scheduleId", toRemoveaSchedule);
 
 // assign schedule to a carer
-router.post("/assignschedule/:carerId", assignSchedule);
+router.post("/assignschedule", assignSchedule);
 
 // get all the available carers
 router.get("/get/availablecarers", getAvailableUsers);

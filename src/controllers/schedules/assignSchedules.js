@@ -2,85 +2,83 @@ const Schedules = require("../../models/schedules/schedules");
 const Staff = require("../../models/administration/staff");
 
 exports.assignSchedule = async (req, res) => {
-  router.post("/assignschedule/:carerId", async (req, res) => {
-    const carerId = req.query.carerId;
-    const scheduleId = req.query.scheduleId;
-    var { from, to, userLocation } = req.body;
+  const carerId = req.query.carerId;
+  const scheduleId = req.query.scheduleId;
+  var { from, to, userLocation } = req.body;
 
-    const servicefrom = new Date(from);
-    const fromdateinmillis = servicefrom.getTime();
-    const serviceto = new Date(to);
-    const todateinmillis = serviceto.getTime();
+  const servicefrom = new Date(from);
+  const fromdateinmillis = servicefrom.getTime();
+  const serviceto = new Date(to);
+  const todateinmillis = serviceto.getTime();
 
-    const time = new Date();
-    const offset = time.getTimezoneOffset();
-    const offsetinmillis = offset * 60 * 1000;
-    const dateinmillis = time.getTime();
-    const localinmillis = dateinmillis - offsetinmillis;
-    // const localdate = new Date(localinmillis).toISOString();
+  const time = new Date();
+  const offset = time.getTimezoneOffset();
+  const offsetinmillis = offset * 60 * 1000;
+  const dateinmillis = time.getTime();
+  const localinmillis = dateinmillis - offsetinmillis;
+  // const localdate = new Date(localinmillis).toISOString();
 
-    const servicestarts = fromdateinmillis - localinmillis;
-    const serviceends = todateinmillis - localinmillis;
+  const servicestarts = fromdateinmillis - localinmillis;
+  const serviceends = todateinmillis - localinmillis;
 
-    console.log(
-      "servicefrom: " + fromdateinmillis,
-      "serviceto: " + todateinmillis
+  console.log(
+    "servicefrom: " + fromdateinmillis,
+    "serviceto: " + todateinmillis
+  );
+
+  try {
+    var carerExists = await Staff.findOne({ _id: carerId });
+    if (!carerExists) {
+      return res.status(402).json({ message: "user not found" });
+    }
+
+    setTimeout(async () => {
+      const newstatus = {
+        schedule: {
+          to: new Date(todateinmillis).toISOString(),
+          from: new Date(fromdateinmillis).toISOString(),
+          location: userLocation,
+        },
+        working: true,
+      };
+
+      await Staff.findOneAndUpdate(
+        { _id: carerId },
+        { $set: { active: newstatus } }
+      );
+    }, servicestarts);
+    const updatedSchedule = Schedules.findOneAndUpdate(
+      { _id: scheduleId },
+      { $set: { carerId: carerId, assigned: true } },
+      { new: true }
     );
 
-    try {
-      var carerExists = await Staff.findOne({ _id: carerId });
-      if (!carerExists) {
-        return res.status(402).json({ message: "user not found" });
-      }
+    setTimeout(async () => {
+      const newstatus = {
+        schedule: {
+          to: undefined,
+          from: undefined,
+          location: {},
+        },
+        working: false,
+      };
 
-      setTimeout(async () => {
-        const newstatus = {
-          schedule: {
-            to: new Date(todateinmillis).toISOString(),
-            from: new Date(fromdateinmillis).toISOString(),
-            location: userLocation,
-          },
-          working: true,
-        };
-
-        await Staff.findOneAndUpdate(
-          { _id: carerId },
-          { $set: { active: newstatus } }
-        );
-      }, servicestarts);
       const updatedSchedule = Schedules.findOneAndUpdate(
         { _id: scheduleId },
-        { $set: { carerId: carerId, assigned: true } },
+        { $set: { past: true } },
         { new: true }
       );
 
-      setTimeout(async () => {
-        const newstatus = {
-          schedule: {
-            to: undefined,
-            from: undefined,
-            location: {},
-          },
-          working: false,
-        };
+      await Staff.findOneAndUpdate(
+        { _id: carerId },
+        { $set: { active: newstatus } }
+      );
+    }, serviceends);
 
-        const updatedSchedule = Schedules.findOneAndUpdate(
-          { _id: scheduleId },
-          { $set: { past: true } },
-          { new: true }
-        );
-
-        await Staff.findOneAndUpdate(
-          { _id: carerId },
-          { $set: { active: newstatus } }
-        );
-      }, serviceends);
-
-      res.status(200).json({ message: "success" });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+    res.status(200).json({ message: "success" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 exports.getAvailableUsers = async (req, res) => {
