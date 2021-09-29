@@ -2,7 +2,7 @@ const Schedules = require("../../models/schedules/schedules");
 const Staff = require("../../models/administration/staff");
 
 exports.assignSchedule = async (req, res) => {
-  router.post("/addschedule/:carerId", async (req, res) => {
+  router.post("/assignschedule/:carerId", async (req, res) => {
     const carerId = req.query.carerId;
     const scheduleId = req.query.scheduleId;
     var { from, to, userLocation } = req.body;
@@ -83,7 +83,7 @@ exports.assignSchedule = async (req, res) => {
   });
 };
 
-router.get("/get/availablecarers", async (req, res) => {
+exports.getAvailableUsers = async (req, res) => {
   const { from, to, job } = req.body;
   var { userLocation } = req.body;
   if (!from || !to || !job || !userLocation) {
@@ -265,10 +265,10 @@ router.get("/get/availablecarers", async (req, res) => {
             _id: minAft.scheduleId,
             userId: minAft.userId,
           });
-          const userlat = userLocation[0];
-          const userlng = userLocation[1];
-          const lat = after.location[0];
-          const lng = after.location[1];
+          const userlat = userLocation.latitude;
+          const userlng = userLocation.longitude;
+          const lat = before.location.latitude;
+          const lng = before.location.longitude;
           const dist2 = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat}%2C${lng}&destinations=${userlat}%2C${userlng}&key=AIzaSyD9KatRTU8LVjtXvgL5JHU2PduZMlZd2n4`;
 
           const response = await axios({
@@ -291,8 +291,46 @@ router.get("/get/availablecarers", async (req, res) => {
       })
     );
 
-    res.status(200).json({ avaliableUser: beforeAfterSchedules });
+    const allCarers = await Staff.find({ role: "carer" });
+    if (!allCarers.length === 0 || allCarers) {
+      return res.status(404).json({ error: "No carers found" });
+    }
+    const availableCarers = await Promise.all(
+      allCarers.map(async (carer) => {
+        const schedules = await Schedules.find({ carerId: carer._id });
+        if (!schedules || schedules.length === 0) return carer;
+      })
+    );
+
+    const carersToSend = await Promise.all(
+      availableCarers.map(async (carer) => {
+        const userlat = userLocation.latitude;
+        const userlng = userLocation.longitude;
+        const lat = carer.geoLocation.coordinates.latitude;
+        const lng = carer.geoLocation.coordinates.longitude;
+        const dist2 = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat}%2C${lng}&destinations=${userlat}%2C${userlng}&key=AIzaSyD9KatRTU8LVjtXvgL5JHU2PduZMlZd2n4`;
+
+        const response = await axios({
+          method: "get",
+          url: dist2,
+          json: true,
+        });
+        if (response.status !== 200) {
+          return res.status(500).json({ error: error.message });
+        }
+        var duration = response.data.rows[0].elements[0].duration.text;
+        var distance = response.data.rows[0].elements[0].distance.text;
+        var carerLocation = response.data.origin_addresses;
+        var details = { distance, duration, carerLocation };
+        return { carer, details: details };
+      })
+    );
+
+    res.status(200).json({
+      avaliableUser: beforeAfterSchedules,
+      usersWithNoSchedules: carersToSend,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
+};
