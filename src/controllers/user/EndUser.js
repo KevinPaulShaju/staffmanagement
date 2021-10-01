@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const User = require("../../models/user/user");
-const {s3} = require("../../helpers/photo")
+const { s3 } = require("../../helpers/photo");
 const { passwordValidation } = require("../../services/staffValidation");
 const {
   userUpdateValidation,
@@ -14,8 +14,7 @@ exports.registerUsers = async (req, res) => {
     firstName,
     lastName,
     email,
-    password,
-    password2,
+
     phone,
     gender,
     DOB,
@@ -34,19 +33,14 @@ exports.registerUsers = async (req, res) => {
     taxFileNumber,
   } = req.body;
 
-  const { error } = userValidation(req.body);
-  if (error) {
-    return res.status(406).json({ error: error.details[0].message });
-  }
+  // const { error } = userValidation(req.body);
+  // if (error) {
+  //   return res.status(406).json({ error: error.details[0].message });
+  // }
   try {
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
       return res.status(406).json({ error: "This User already exists." });
-    }
-
-    // confirming passwords
-    if (password !== password2) {
-      return res.status(406).json({ error: "Passwords do not match." });
     }
 
     const newUser = new User(req.body);
@@ -61,9 +55,9 @@ exports.registerUsers = async (req, res) => {
 };
 
 exports.userLogin = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, DOB } = req.body;
 
-  if (!email || !password) {
+  if (!email || !DOB) {
     return res
       .status(406)
       .json({ error: "Both Email & Password must be provided" });
@@ -77,8 +71,8 @@ exports.userLogin = async (req, res) => {
     }
 
     //   match password
-    const match = await bcrypt.compare(password, existingUser.password);
-    if (!match) {
+    // const match = await bcrypt.compare(password, existingUser.password);
+    if (!DOB !== existingUser.DOB) {
       return res.status(401).json({ error: "Invalid Credentials" });
     }
 
@@ -122,10 +116,10 @@ exports.updateUser = async (req, res) => {
     preferredName,
   } = req.body;
 
-  const { error } = userUpdateValidation(req.body);
-  if (error) {
-    return res.status(406).json({ error: error.details[0].message });
-  }
+  // const { error } = userUpdateValidation(req.body);
+  // if (error) {
+  //   return res.status(406).json({ error: error.details[0].message });
+  // }
 
   try {
     const existingUser = await User.findOne({ _id: userId });
@@ -212,22 +206,21 @@ exports.deleteuser = async (req, res) => {
       return res.status(404).json({ error: "This user does not exist" });
     }
 
-    if(existingUser.photo !== null){
+    if (existingUser.photo !== null) {
       const profilePic = existingUser.photo;
       var fields = profilePic.split("/");
       const profilePhoto = fields[fields.length - 1];
 
-      var params = {Bucket:'photousers',Key:profilePhoto};
-      s3.deleteObject(params,async (err, res) => {
-          if(err){
-              return res.status(400).json({message:err.message});
-          }
-      })
-      
-      await existingUser.remove();
-      return res.status(200).json({message:"User has been removed"})
-    }
+      var params = { Bucket: "photousers", Key: profilePhoto };
+      s3.deleteObject(params, async (err, res) => {
+        if (err) {
+          return res.status(400).json({ message: err.message });
+        }
+      });
 
+      await existingUser.remove();
+      return res.status(200).json({ message: "User has been removed" });
+    }
 
     await existingUser.remove();
     res.status(200).json({ message: "User has been removed" });

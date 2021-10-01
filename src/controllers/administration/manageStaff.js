@@ -8,7 +8,7 @@ const Staff = require("../../models/administration/staff");
 const Permissions = require("../../models/administration/Permissions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { uploadStaff,s3 } = require("../../helpers/photo");
+const { uploadStaff, s3 } = require("../../helpers/photo");
 const fs = require("fs");
 
 //Create staff
@@ -55,19 +55,21 @@ exports.createStaff = async (req, res) => {
   } = req.body;
 
   // validating the input
-  const { error } = staffValidation(req.body.basicDetails);
-  if (error) {
-    return res.status(406).json({ error: error.details[0].message });
-  }
+  // const { error } = staffValidation(req.body.basicDetails);
+  // if (error) {
+  //   return res.status(406).json({ error: error.details[0].message });
+  // }
 
-  const { error: error1 } = rolesValidation(req.body.permissions);
-  if (error1) {
-    return res.status(406).json({ error: error1.details[0].message });
-  }
+  // const { error: error1 } = rolesValidation(req.body.permissions);
+  // if (error1) {
+  //   return res.status(406).json({ error: error1.details[0].message });
+  // }
   try {
     const existingStaff = await Staff.findOne({ email: email });
     if (existingStaff) {
-      return res.status(406).json({ error: `This ${email} with this ${role} already exists.` });
+      return res
+        .status(406)
+        .json({ error: `This ${email} with this ${role} already exists.` });
     }
 
     // confirming passwords
@@ -88,11 +90,13 @@ exports.createStaff = async (req, res) => {
       staffId: savedStaff._id,
       name: savedStaff.name,
     });
-    console.log(newPermissions);
-
+    const staffToSend =await Staff.findOne({ _id: savedStaff.id }).select(
+      "-password"
+    );
     const savedPermissions = await newPermissions.save();
     res.status(200).json({
       message: `${role} staff has been successfully registered.`,
+      staff: { staffToSend, savedPermissions },
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -151,14 +155,14 @@ exports.staffLogin = async (req, res) => {
 exports.updateStaffDetails = async (req, res) => {
   // const role = req.query.role;
   const staffId = req.params.staffId;
-  const { error } = staffUpdateValidation(req.body.basicDetails);
-  if (error) {
-    return res.status(406).json({ error: error.details[0].message });
-  }
-  const { error: error1 } = rolesValidation(req.body.permissions);
-  if (error1) {
-    return res.status(406).json({ error: error1.details[0].message });
-  }
+  // const { error } = staffUpdateValidation(req.body.basicDetails);
+  // if (error) {
+  //   return res.status(406).json({ error: error.details[0].message });
+  // }
+  // const { error: error1 } = rolesValidation(req.body.permissions);
+  // if (error1) {
+  //   return res.status(406).json({ error: error1.details[0].message });
+  // }
 
   try {
     const existingStaff = await Staff.findOne({ _id: staffId });
@@ -240,20 +244,20 @@ exports.deletestaffAccount = async (req, res) => {
       return res.status(404).json({ error: "Staff does not exist" });
     }
 
-    if(existingStaff.photo !== null){
+    if (existingStaff.photo !== null) {
       const profilePic = existingStaff.photo;
       var fields = profilePic.split("/");
       const profilePhoto = fields[fields.length - 1];
 
-      var params = {Bucket:'photostaffs',Key:profilePhoto};
-      s3.deleteObject(params,async (err, res) => {
-          if(err){
-              return res.status(400).json({message:err.message});
-          }
-      })
-      
+      var params = { Bucket: "photostaffs", Key: profilePhoto };
+      s3.deleteObject(params, async (err, res) => {
+        if (err) {
+          return res.status(400).json({ message: err.message });
+        }
+      });
+
       await existingStaff.remove();
-      return res.status(200).json({message:"Staff has been removed"})
+      return res.status(200).json({ message: "Staff has been removed" });
     }
 
     await existingStaff.remove();
