@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const servicesSchema = new mongoose.Schema({
   serviceName: { type: String, required: true },
-  serviceCode: { type: Number, required: true },
   weekdayEarly: { type: Number },
   weekdayEarlyCode: { type: Number },
   weekdayNormal: { type: Number },

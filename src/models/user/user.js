@@ -4,10 +4,10 @@ const UserReport = require("../../models/user/reportuser");
 const Schedules = require("../schedules/schedules");
 
 const EndUserSchema = mongoose.Schema({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: { type: String, required: true },
-  phone: { type: String, required: true },
+  firstName: { type: String },
+  lastName: { type: String },
+  email: { type: String },
+  phone: { type: String },
   photo: { type: String, default: null },
   gender: { type: String, required: true, enum: ["male", "female", "other"] },
   dateOfBirth: { type: Date, default: Date.now() },
@@ -15,30 +15,30 @@ const EndUserSchema = mongoose.Schema({
   geoLocation: {
     type: { type: String, required: true, enum: ["Point"] },
     coordinates: {
-      latitude: { type: Number, required: true },
-      longitude: { type: Number, required: true },
+      latitude: { type: Number },
+      longitude: { type: Number },
     },
   },
-  languageSpoken: { type: Array, required: true },
-  emergencyContactName: { type: String, required: true },
-  emergencyContactNumber: { type: String, required: true },
-  emergencyContactRelationship: { type: String, required: true },
-  emergencyContactAddress: { type: String, required: true },
+  languageSpoken: { type: Array },
+  emergencyContactName: { type: String },
+  emergencyContactNumber: { type: String },
+  emergencyContactRelationship: { type: String },
+  emergencyContactAddress: { type: String },
   isNDIC: { type: Boolean },
-  ndicNumber: { type: Number, required: true },
+  ndicNumber: { type: Number },
   isTac: { type: Boolean },
-  tacNumber: { type: Number, required: true },
+  tacNumber: { type: Number },
   isBrokerage: { type: Boolean },
-  brokerageName: { type: String, required: true },
-  // taxFileNumber: { type: Number, required: true },
-  // maidenName: { type: String, required: true },
+  brokerageName: { type: String },
+  // taxFileNumber: { type: Number, },
+  // maidenName: { type: String, },
   // isReferred: {
   //   type: String,
   //   required: true,
   //   default: false,
   //   enum: [true, false],
   // },
-  // preferedName: { type: String, required: true },
+  // preferedName: { type: String, },
 });
 
 EndUserSchema.pre("save", async function (next) {
