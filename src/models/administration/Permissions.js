@@ -22,6 +22,7 @@ const PermissionsSchema = new mongoose.Schema({
   financeModule: Modules,
   ndisModule: Modules,
   nagModule: Modules,
+  supportCoordinatorModule: Modules,
 });
 
 const Permissions = new mongoose.model("Permissions", PermissionsSchema);

@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const UserReport = require("../../models/user/reportuser");
 const Schedules = require("../schedules/schedules");
+const Schema = mongoose.Schema;
 
 const EndUserSchema = mongoose.Schema({
   firstName: { type: String },
@@ -30,6 +31,12 @@ const EndUserSchema = mongoose.Schema({
   tacNumber: { type: Number },
   isBrokerage: { type: Boolean },
   brokerageName: { type: String },
+  isSupportCoordinator: { type: Boolean },
+  supportCoordinatorId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: "staff",
+  },
   // taxFileNumber: { type: Number, },
   // maidenName: { type: String, },
   // isReferred: {

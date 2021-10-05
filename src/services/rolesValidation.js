@@ -1,100 +1,40 @@
 const Joi = require("joi");
 
+const validation = Joi.object({
+  enabled: Joi.boolean().default(false),
+  read: Joi.boolean().default(false),
+  write: Joi.boolean().default(false),
+}).required();
+
 const rolesValidation = (data) => {
-  const schema = Joi.object()
-    .required()
-    .keys({
-      adminModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      staffModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      financeModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      ndisModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      nagModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      careTakerModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      patientModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      scheduleModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-    });
+  const schema = Joi.object().required().keys({
+    adminModule: validation,
+    staffModule: validation,
+    financeModule: validation,
+    ndisModule: validation,
+    nagModule: validation,
+    careTakerModule: validation,
+    patientModule: validation,
+    scheduleModule: validation,
+    supportCoordinatorModule: validation,
+  });
 
   return schema.validate(data);
 };
 
 const newPermissionsValidation = (data) => {
-  const schema = Joi.object()
-    .required()
-    .keys({
-      role: Joi.string().required(),
-      adminModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      staffModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      financeModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      ndisModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      nagModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      careTakerModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      patientModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-      scheduleModule: Joi.object({
-        enabled: Joi.boolean().default(false),
-        read: Joi.boolean().default(false),
-        write: Joi.boolean().default(false),
-      }).required(),
-    });
+  const schema = Joi.object().required().keys({
+    role: Joi.string().required(),
+    adminModule: validation,
+    staffModule: validation,
+    financeModule: validation,
+    ndisModule: validation,
+    nagModule: validation,
+    careTakerModule: validation,
+    patientModule: validation,
+    scheduleModule: validation,
+    supportCoordinatorModule: validation,
+  });
 
   return schema.validate(data);
 };

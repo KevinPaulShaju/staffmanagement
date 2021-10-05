@@ -9,6 +9,10 @@ const {
   updateUser,
   changePassword,
   deleteuser,
+  getBrokerageUsers,
+  getNdicUsers,
+  getTacUsers,
+  getUsersWithCoordinator,
 } = require("../../controllers/user/EndUser");
 
 // to register a new user
@@ -47,5 +51,35 @@ router.get("/view/profile/:userId", viewUserProfile);
  * @route  /view/all
  */
 router.get("/view/all", viewAllUsers);
+
+// filter routes
+
+/**
+ * @desc view ndic users
+ * @method GET
+ * @route  /view/ndic
+ */
+router.get("/view/ndic", getNdicUsers);
+
+/**
+ * @desc view tac users
+ * @method GET
+ * @route  /view/tac
+ */
+router.get("/view/tac", getTacUsers);
+
+/**
+ * @desc view brokerage users
+ * @method GET
+ * @route  /view/brokerage
+ */
+router.get("/view/brokerage", getBrokerageUsers);
+
+/**
+ * @desc view userswithcoordinator users
+ * @method GET
+ * @route  /view/userswithcoordinator
+ */
+router.get("/view/userswithcoordinator", getUsersWithCoordinator);
 
 module.exports = router;

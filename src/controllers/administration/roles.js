@@ -4,7 +4,7 @@ const { newPermissionsValidation } = require("../../services/rolesValidation");
 exports.createRole = async (req, res) => {
   const { role } = req.body;
   const { error } = newPermissionsValidation(req.body);
- 
+
   if (error) {
     return res.status(406).json({ error: error.details[0].message });
   }
@@ -14,7 +14,7 @@ exports.createRole = async (req, res) => {
       return res.status(406).json({ error: "This role already exists" });
     }
     const newRole = new Roles(req.body);
-    console.log(req.body)
+    console.log(req.body);
     const savedRole = await newRole.save();
     res.status(200).json({ message: "New role has been added successfully" });
   } catch (error) {
@@ -30,7 +30,7 @@ exports.updateRole = async (req, res) => {
     return res.status(406).json({ error: error.details[0].message });
   }
   try {
-    const roleExists = await Roles.findOne({ role: role });
+    const roleExists = await Roles.findOne({ _id: permissionId });
     if (!roleExists) {
       return res.status(406).json({ error: "This role does not exist" });
     }

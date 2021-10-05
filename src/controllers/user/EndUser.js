@@ -10,28 +10,7 @@ const {
 } = require("../../services/userValidation");
 
 exports.registerUsers = async (req, res) => {
-  const {
-    firstName,
-    lastName,
-    email,
-
-    phone,
-    gender,
-    DOB,
-    address,
-    role,
-    location,
-    languageSpoken,
-    emergencyContactName,
-    emergencyContactNumber,
-    emergencyContactRelationship,
-    emergencyContactAddress,
-    secondaryContactName,
-    secondaryContactNumber,
-    secondaryContactRelationship,
-    secondaryContactAddress,
-    taxFileNumber,
-  } = req.body;
+  const { email } = req.body;
 
   // const { error } = userValidation(req.body);
   // if (error) {
@@ -224,6 +203,64 @@ exports.deleteuser = async (req, res) => {
 
     await existingUser.remove();
     res.status(200).json({ message: "User has been removed" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getNdicUsers = async (req, res) => {
+  try {
+    const users = await User.find({ isNDIC: true }).select("-password");
+    if (!users || !users.length) {
+      return res
+        .status(404)
+        .json({ message: "No users found under NDIC category" });
+    }
+    res.status(200).json({ users: users });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getTacUsers = async (req, res) => {
+  try {
+    const users = await User.find({ isTac: true }).select("-password");
+    if (!users || !users.length) {
+      return res
+        .status(404)
+        .json({ message: "No users found under Tac category" });
+    }
+    res.status(200).json({ users: users });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getBrokerageUsers = async (req, res) => {
+  try {
+    const users = await User.find({ isBrokerage: true }).select("-password");
+    if (!users || !users.length) {
+      return res
+        .status(404)
+        .json({ message: "No users found under Brokerage category" });
+    }
+    res.status(200).json({ users: users });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getUsersWithCoordinator = async (req, res) => {
+  try {
+    const users = await User.find({ isSupportCoordinator: true }).select(
+      "-password"
+    );
+    if (!users || !users.length) {
+      return res
+        .status(404)
+        .json({ message: "No users found under Brokerage category" });
+    }
+    res.status(200).json({ users: users });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
