@@ -16,6 +16,7 @@ const rolesSchema = new mongoose.Schema({
   financeModule: Modules,
   ndisModule: Modules,
   nagModule: Modules,
+  supportCoordinatorModule: Modules,
 });
 
 const Roles = new mongoose.model("Roles", rolesSchema);
