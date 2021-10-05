@@ -43,6 +43,11 @@ const StaffSchema = new mongoose.Schema({
     },
     working: { type: Boolean },
   },
+  roleId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "roles",
+  },
 });
 
 //Hashing the Password

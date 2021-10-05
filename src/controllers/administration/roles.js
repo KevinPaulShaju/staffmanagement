@@ -1,6 +1,6 @@
 const Roles = require("../../models/administration/Roles");
 const { newPermissionsValidation } = require("../../services/rolesValidation");
-
+const Staff = require("../../models/administration/staff");
 exports.createRole = async (req, res) => {
   const { role } = req.body;
   const { error } = newPermissionsValidation(req.body);
@@ -74,6 +74,30 @@ exports.getAllRoles = async (req, res) => {
         .json({ error: "No roles found.May be create one?" });
     }
     res.status(200).json({ roles: roles });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.deleteRole = async (req, res) => {
+  try {
+    const roleId = req.params.roleId;
+
+    const roleExists = await Roles.findOne({ _id: roleId });
+    if (!roleExists) {
+      return res.status(404).json({ error: "No roles found with this id" });
+    }
+    const staffsWithThisRole = await Staff.find({ roleId: roleId });
+    if (staffsWithThisRole.length > 0) {
+      return res.status(200).json({
+        message: "You have staffs with this role. Role can not be deleted",
+        staffNumber: staffsWithThisRole.length,
+      });
+    }
+    await staffsWithThisRole.remove();
+    res
+      .status(200)
+      .json({ message: "This role has been successfully deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -5,65 +5,49 @@ const {
 } = require("../../services/staffValidation");
 const { rolesValidation } = require("../../services/rolesValidation");
 const Staff = require("../../models/administration/staff");
-const Permissions = require("../../models/administration/Permissions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { uploadStaff, s3 } = require("../../helpers/photo");
 const fs = require("fs");
+const Roles = require("../../models/administration/Roles");
 
 //Create staff
 exports.createStaff = async (req, res) => {
-  const staffRole = req.query.role;
-  // const { name, email, gender, phone, password, password2 } = req.body;
-  if (!req.body.basicDetails || !req.body.permissions) {
-    return res.status(406).json({ error: "Fill up all the details." });
-  }
   const {
-    basicDetails: {
-      firstName,
-      lastName,
-      email,
-      password,
-      password2,
-      phone,
-      gender,
-      dateOfBirth,
-      address,
-      geoLocation,
-      languageSpoken,
-      emergencyContactName,
-      emergencyContactNumber,
-      emergencyContactRelationship,
-      emergencyContactAddress,
-      role,
-      position,
-      preferredName,
-      accountNumber,
-      bankId,
-      taxFileNumber,
-    },
-    permissions: {
-      adminModule,
-      staffModule,
-      careTakerModule,
-      patientModule,
-      scheduleModule,
-      financeModule,
-      ndisModule,
-      nagModule,
-    },
+    firstName,
+    lastName,
+    email,
+    password,
+    password2,
+    phone,
+    gender,
+    dateOfBirth,
+    address,
+    geoLocation,
+    languageSpoken,
+    emergencyContactName,
+    emergencyContactNumber,
+    emergencyContactRelationship,
+    emergencyContactAddress,
+    role,
+    position,
+    preferredName,
+    accountNumber,
+    bankId,
+    taxFileNumber,
+    roleId,
   } = req.body;
 
+  if (!req.body.email || !req.body.password || !req.body.password2) {
+    return res.status(406).json({ error: "Fill up all the details." });
+  }
+
   // validating the input
-  // const { error } = staffValidation(req.body.basicDetails);
+  // const { error } = staffValidation(req.body);
   // if (error) {
   //   return res.status(406).json({ error: error.details[0].message });
   // }
 
-  // const { error: error1 } = rolesValidation(req.body.permissions);
-  // if (error1) {
-  //   return res.status(406).json({ error: error1.details[0].message });
-  // }
   try {
     const existingStaff = await Staff.findOne({ email: email });
     if (existingStaff) {
@@ -72,31 +56,29 @@ exports.createStaff = async (req, res) => {
         .json({ error: `This ${email} with this ${role} already exists.` });
     }
 
+    const existingRole = await Roles.findOne({ _id: roleId });
+    if (!existingRole) {
+      return res.status(404).json({
+        error: `Role with this if does not exist.`,
+      });
+    }
+
     // confirming passwords
     if (password !== password2) {
       return res.status(406).json({ error: "Passwords do not match." });
     }
 
-    var newStaff;
-    if (req.body.basicDetails.role === "carer") {
-      newStaff = new Staff({ ...req.body.basicDetails, status: "pending" });
-    } else {
-      newStaff = new Staff(req.body.basicDetails);
-    }
+    var newStaff = new Staff({ ...req.body, status: "pending" });
+
     const savedStaff = await newStaff.save();
 
-    const newPermissions = new Permissions({
-      ...req.body.permissions,
-      staffId: savedStaff._id,
-      name: savedStaff.name,
-    });
-    const staffToSend =await Staff.findOne({ _id: savedStaff.id }).select(
+    const staffToSend = await Staff.findOne({ _id: savedStaff.id }).select(
       "-password"
     );
-    const savedPermissions = await newPermissions.save();
+    const rolesToSend = await Roles.findOne({ _id: savedStaff.roleId });
     res.status(200).json({
       message: `${role} staff has been successfully registered.`,
-      staff: { staffToSend, savedPermissions },
+      staff: { staffToSend, rolesToSend },
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -132,8 +114,8 @@ exports.staffLogin = async (req, res) => {
       });
     }
 
-    const roleModules = await Permissions.findOne({
-      staffId: existingStaff._id,
+    const roleModules = await Roles.findOne({
+      _id: existingStaff.roleId,
     });
 
     // jwt authorization
@@ -171,26 +153,20 @@ exports.updateStaffDetails = async (req, res) => {
     }
 
     //   query
-    let query = { $set: req.body.basicDetails };
+    let query = { $set: req.body };
 
     const updatedStaff = await Staff.findOneAndUpdate({ _id: staffId }, query, {
       new: true,
     }).select("-password");
 
-    let query2 = { $set: req.body.permissions };
-
-    const updatedPermissions = await Permissions.findOneAndUpdate(
-      {
-        staffId: existingStaff._id,
-      },
-      query2,
-      { new: true }
-    );
+    const roleModules = await Roles.findOne({
+      _id: existingStaff.roleId,
+    });
 
     res.status(200).json({
       message: "Update Successfully",
       updatedStaff: updatedStaff,
-      updatedPermissions: updatedPermissions,
+      roleModules: roleModules,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -199,7 +175,6 @@ exports.updateStaffDetails = async (req, res) => {
 
 // update staff password
 exports.updateStaffPasswords = async (req, res) => {
-  const role = req.query.role;
   const staffId = req.params.staffId;
   const { error } = passwordValidation(req.body);
   if (error) {
@@ -303,11 +278,11 @@ exports.staffProfile = async (req, res) => {
     if (!findStaff) {
       return res.status(404).json({ error: "Staff not found" });
     }
-    const permissions = await Permissions.findOne({ staffId: findStaff._id });
-    if (!permissions) {
-      res.status(404).json({ error: "Missing permissions data" });
+    const roles = await Roles.findOne({ staffId: findStaff.roleId });
+    if (!roles) {
+      res.status(404).json({ error: "Missing roles data" });
     }
-    res.status(200).json({ staff: findStaff, permissions: permissions });
+    res.status(200).json({ staff: findStaff, roles: roles });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

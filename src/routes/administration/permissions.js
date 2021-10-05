@@ -4,6 +4,7 @@ const {
   getAllRoles,
   getRole,
   updateRole,
+  deleteRole,
 } = require("../../controllers/administration/roles");
 
 /**
@@ -33,5 +34,12 @@ router.get("/get/all", getAllRoles);
  * @route /view/:permissionId
  **/
 router.get("/view/:permissionId", getRole);
+
+/**
+ * @description delete a role
+ * @method GET
+ * @route /delete/:permissionId
+ **/
+router.get("/delete/:roleId", deleteRole);
 
 module.exports = router;
