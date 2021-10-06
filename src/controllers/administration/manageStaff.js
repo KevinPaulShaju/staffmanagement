@@ -38,7 +38,7 @@ exports.createStaff = async (req, res) => {
     roleId,
   } = req.body;
 
-  if (!req.body.email || !req.body.password || !req.body.password2) {
+  if (!email || !password || !password2) {
     return res.status(406).json({ error: "Fill up all the details." });
   }
 
@@ -77,7 +77,7 @@ exports.createStaff = async (req, res) => {
     );
     const rolesToSend = await Roles.findOne({ _id: savedStaff.roleId });
     res.status(200).json({
-      message: `${role} staff has been successfully registered.`,
+      message: `${existingRole.role} staff has been successfully registered.`,
       staff: { staffToSend, rolesToSend },
     });
   } catch (error) {

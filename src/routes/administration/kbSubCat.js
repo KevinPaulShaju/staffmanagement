@@ -2,87 +2,54 @@ const express = require("express");
 var validUrl = require("valid-url");
 const fs = require("fs");
 const router = express.Router();
-const { kbDocuments } = require("../../helpers/photo");
+const { kbDocuments,s3 } = require("../../helpers/photo");
 const Category = require("../../models/administration/kbCategory");
 const Subcategory = require("../../models/administration/kbSubcategory");
 
-router.post(
-  "/add/:categoryId",
-  kbDocuments.single("document"),
-  async (req, res) => {
-    try {
-      const categoryId = req.params.categoryId;
-      const { subcategoryName, document } = req.body;
-      var newSubCategory, savedSubCategory;
-      if (!categoryId) {
-        return res.status(400).json({ error: "CategoryId Should be Provided" });
-      }
-      if (!subcategoryName) {
-        return res
-          .status(406)
-          .json({ error: "Subcategory Name Should be Provided" });
-      }
-
-      const findCategory = await Category.findOne({ _id: categoryId });
-      if (!findCategory) {
-        return res.status(404).json({ error: "Category Not Found" });
-      }
-      if (!req.file && !document) {
-        return res
-          .status(400)
-          .json({ error: "Either Link Or File You Need To Provide" });
-      }
-
-      if (req.file) {
-        newSubCategory = new Subcategory({
-          categoryId,
-          subcategoryName,
-          documents: `https://careflo.herokuapp.com/kbdocuments/${req.file.filename}`,
-        });
-        savedSubCategory = await newSubCategory.save();
-        return res.status(201).json({
-          message: "Sub Document saved successfully",
-          result: savedSubCategory,
-        });
-      }
-
-      if (!validUrl.isUri(document)) {
-        newSubCategory = new Subcategory({
-          categoryId,
-          subcategoryName,
-          content: document,
-        });
-        savedSubCategory = await newSubCategory.save();
-        return res.status(201).json({
-          message: "Sub Document saved successfully",
-          result: savedSubCategory,
-        });
-      }
-
-      newSubCategory = new Subcategory({
-        categoryId,
-        subcategoryName,
-        links: document,
-      });
-      savedSubCategory = await newSubCategory.save();
-      return res.status(201).json({
-        message: "Sub Document saved successfully",
-        result: savedSubCategory,
-      });
-    } catch (e) {
-      res.status(500).json({
-        error: e.message,
-        message: "Internal Server Error",
-      });
+router.post("/add/:categoryId",kbDocuments.single("document"),async (req, res) => {
+    
+    const categoryId = req.params.categoryId;
+    const { subcategoryName, document } = req.body;
+    var newSubCategory, savedSubCategory;
+    if (!categoryId) {
+      return res.status(400).json({ error: "CategoryId Should be Provided" });
     }
-  }
-);
+    if (!subcategoryName) {
+      return res.status(406).json({ error: "Subcategory Name Should be Provided" });
+    }
 
-router.post(
-  "/update/document/:subcategoryId",
-  kbDocuments.single("document"),
-  async (req, res) => {
-    try {
+    const findCategory = await Category.findOne({ _id: categoryId });
+    if (!findCategory) {
+      return res.status(404).json({ error: "Category Not Found" });
+    }
+    if (!req.file && !document) {
+      return res.status(400).json({ error: "Either Link Or File You Need To Provide" });
+    }
+
+    if (req.file) {
+      console.log(req.file)
+      newSubCategory = new Subcategory({categoryId,subcategoryName,documents: req.file.location,});
+
+      savedSubCategory = await newSubCategory.save();
+      return res.status(201).json({message: "Sub Document saved successfully",result: savedSubCategory,});
+    }
+
+    if (!validUrl.isUri(document)) {
+      newSubCategory = new Subcategory({categoryId,subcategoryName,content: document,});
+      savedSubCategory = await newSubCategory.save();
+      return res.status(201).json({message: "Sub Document saved successfully",result: savedSubCategory,});
+    }
+
+    newSubCategory = new Subcategory({categoryId,subcategoryName,links: document,});
+
+    savedSubCategory = await newSubCategory.save();
+    return res.status(201).json({message: "Sub Document saved successfully",result: savedSubCategory,});
+  },(err, req, res, next) => {
+    return res.status(400).json({ error:err.message});
+});
+
+router.post("/update/document/:subcategoryId",kbDocuments.single("document"),async (req, res) => {
+  
       const _id = req.params.subcategoryId;
       const { document } = req.body;
 
@@ -99,51 +66,40 @@ router.post(
         var fields = kbDocument.split("/");
         const documentKb = fields[fields.length - 1];
 
-        fs.unlink(`./uploads/kbdocuments/${documentKb}`, (err) => {
+        var params = {Bucket:'kbsubdocuments',Key:documentKb};
+        s3.deleteObject(params, (err) => {
           if (err) {
             return res.status(400).json({ error: err.message });
           }
         });
 
         if (req.file) {
-          (findSubCategory.documents = `https://careflo.herokuapp.com/kbdocuments/${req.file.filename}`),
-            (findSubCategory.links = null);
+          findSubCategory.documents = req.file.location;
+          findSubCategory.links = null;
           findSubCategory.content = null;
           const newSubCategory = await findSubCategory.save();
-          return res.status(201).json({
-            message: "Sub Updated successfully",
-            savedSubCategory: newSubCategory,
-          });
+          return res.status(201).json({message: "Sub Updated successfully",savedSubCategory: newSubCategory});
         }
         if (!validUrl.isUri(document)) {
           findSubCategory.content = document;
           findSubCategory.documents = null;
           findSubCategory.links = null;
           const newSubCategory = await findSubCategory.save();
-          return res.status(201).json({
-            message: "Sub Updated successfully",
-            savedSubCategory: newSubCategory,
-          });
+          return res.status(201).json({message: "Sub Updated successfully",savedSubCategory: newSubCategory});
         }
         findSubCategory.links = document;
         findSubCategory.content = null;
         findSubCategory.documents = null;
         const newSubCategory = await findSubCategory.save();
-        return res.status(201).json({
-          message: "Sub Updated successfully",
-          savedSubCategory: newSubCategory,
-        });
+        return res.status(201).json({message: "Sub Updated successfully",savedSubCategory: newSubCategory});
       }
 
       if (req.file) {
-        (findSubCategory.documents = `https://careflo.herokuapp.com/kbdocuments/${req.file.filename}`),
-          (findSubCategory.links = null);
+        findSubCategory.documents = req.file.location,
+        findSubCategory.links = null;
         findSubCategory.content = null;
         const newSubCategory = await findSubCategory.save();
-        return res.status(201).json({
-          message: "Sub Updated successfully",
-          savedSubCategory: newSubCategory,
-        });
+        return res.status(201).json({message: "Sub Updated successfully",savedSubCategory: newSubCategory,});
       }
 
       if (!validUrl.isUri(document)) {
@@ -151,28 +107,18 @@ router.post(
         findSubCategory.documents = null;
         findSubCategory.links = null;
         const newSubCategory = await findSubCategory.save();
-        return res.status(201).json({
-          message: "Sub Updated successfully",
-          savedSubCategory: newSubCategory,
-        });
+        return res.status(201).json({message: "Sub Updated successfully",savedSubCategory: newSubCategory,});
       }
 
       findSubCategory.links = document;
       findSubCategory.content = null;
       findSubCategory.documents = null;
       const newSubCategory = await findSubCategory.save();
-      return res.status(201).json({
-        message: "Sub Updated successfully",
-        savedSubCategory: newSubCategory,
-      });
-    } catch (e) {
-      res.status(500).json({
-        error: e.message,
-        message: "Internal Server Error",
-      });
-    }
-  }
-);
+      return res.status(201).json({message: "Sub Updated successfully",savedSubCategory: newSubCategory});
+    
+  },(err, req, res, next) => {
+    return res.status(400).json({ error:err.message});
+});
 
 router.post("/update/:subcategoryId", async (req, res) => {
   const subcategoryId = req.params.subcategoryId;
@@ -181,29 +127,16 @@ router.post("/update/:subcategoryId", async (req, res) => {
     return res.status(406).json({ error: "Contents can not be left empty" });
   }
   try {
-    const existingSubCategory = await Subcategory.findOne({
-      _id: subcategoryId,
-    });
+    const existingSubCategory = await Subcategory.findOne({_id: subcategoryId});
 
     if (!existingSubCategory) {
-      return res
-        .status(404)
-        .json({ error: "This sub category does not exist" });
+      return res.status(404).json({ error: "This sub category does not exist" });
     }
 
     const query = { $set: req.body };
 
-    const updatedSubcategory = await Subcategory.findOneAndUpdate(
-      {
-        _id: subcategoryId,
-      },
-      query,
-      { new: true }
-    );
-    res.status(200).json({
-      message: "Sub category has been successfully updated",
-      updatedSubcategory: updatedSubcategory,
-    });
+    const updatedSubcategory = await Subcategory.findOneAndUpdate({_id: subcategoryId},query,{ new: true });
+    res.status(200).json({message: "Sub category has been successfully updated",updatedSubcategory: updatedSubcategory});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -215,22 +148,15 @@ router.get("/view/:subCategoryId", async (req, res) => {
     return res.status(400).json({ error: "Id Required" });
   }
   try {
-    const existingSubCategory = await Subcategory.findOne({
-      _id: subCategoryId,
-    });
+    const existingSubCategory = await Subcategory.findOne({_id: subCategoryId});
 
     if (!existingSubCategory) {
-      return res
-        .status(404)
-        .json({ error: "Knowledge base sub category does not exist" });
+      return res.status(404).json({ error: "Knowledge base sub category does not exist" });
     }
 
     res.status(200).json({ subcategory: existingSubCategory });
   } catch (e) {
-    res.status(500).json({
-      error: e.message,
-      message: "Internal Server Error",
-    });
+    res.status(500).json({error: e.message,message: "Internal Server Error",});
   }
 });
 
@@ -248,28 +174,20 @@ router.get("/view/all/subcategories/:categoryId", async (req, res) => {
   try {
     const existingCategory = await Category.findOne({ _id });
     if (!existingCategory) {
-      return res
-        .status(404)
-        .json({ error: "This knowledge base category does not exist" });
+      return res.status(404).json({ error: "This knowledge base category does not exist" });
     }
 
     const subcategoryByCategory = await Subcategory.find({ categoryId: _id });
 
     if (!subcategoryByCategory || subcategoryByCategory.length === 0) {
-      return res.status(404).json({
-        error:
-          "You have not added any knowledge base categories. May be add one?",
-      });
+      return res.status(404).json({error:"You have not added any knowledge base categories. May be add one?"});
     }
     res.status(200).json({
       message: `you have ${subcategoryByCategory.length} knowledge base categories`,
       subcategoryByCategory: subcategoryByCategory,
     });
   } catch (e) {
-    res.status(500).json({
-      error: e.message,
-      message: "Internal Server Error",
-    });
+    res.status(500).json({error: e.message,message: "Internal Server Error"});
   }
 });
 
@@ -281,27 +199,26 @@ router.get("/view/all/subcategories/:categoryId", async (req, res) => {
 router.get("/remove/:subCategoryId", async (req, res) => {
   const subCategoryId = req.params.subCategoryId;
   try {
-    const existingSubCategory = await Subcategory.findOne({
-      _id: subCategoryId,
-    });
+    const existingSubCategory = await Subcategory.findOne({_id: subCategoryId});
 
     if (!existingSubCategory) {
-      return res
-        .status(404)
-        .json({ error: "Knowledge base sub category does not exist" });
+      return res.status(404).json({ error: "Knowledge base sub category does not exist" });
     }
 
     if (existingSubCategory.documents !== null) {
+
       const kbDocument = existingSubCategory.documents;
       var fields = kbDocument.split("/");
       const documentKb = fields[fields.length - 1];
 
-      fs.unlink(`./uploads/kbdocuments/${documentKb}`, async (err) => {
-        if (err) {
-          return res.status(400).json({ error: err.message });
+      var params = {Bucket:'kbsubdocuments',Key:documentKb};
+      s3.deleteObject(params,async (err, res) => {
+        if(err){
+            return res.status(400).json({message:err.message});
         }
         await existingSubCategory.remove();
-      });
+      })
+
 
       return res.status(200).json({ message: "Sub category has been removed" });
     }

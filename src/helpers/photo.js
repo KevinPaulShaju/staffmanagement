@@ -76,22 +76,41 @@ const uploadUser = multer({
 });
 
 
-
-
 const kbDocuments = multer({
-    storage: storageKbDocuments,
-    limits: {
-        fileSize: 5000000*2,
-    },
-    abortOnLimit: true,
-    fileFilter(req, file, cb,next) {
-        if (!file.originalname.match(/\.(pdf|txt)$/)) {
-            return cb(new Error("Please Upload a Photo"));
+    storage: multerS3({
+        s3: s3,
+        bucket: 'kbsubdocuments',
+        acl:'public-read',
+        metadata: function(req, res,cb){
+            return cb(null,{fieldname:'User Photo'});
+        },
+        key: function (req, file, cb) {
+            console.log(file);
+            return cb(null,`${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
         }
-        cb(undefined, true);
         
+    }),
+    limits:{
+        fileSize: 1000000*10,
     },
 });
+
+
+
+// const kbDocuments = multer({
+//     storage: storageKbDocuments,
+//     limits: {
+//         fileSize: 5000000*2,
+//     },
+//     abortOnLimit: true,
+//     fileFilter(req, file, cb,next) {
+//         if (!file.originalname.match(/\.(pdf|txt)$/)) {
+//             return cb(new Error("Please Upload a Photo"));
+//         }
+//         cb(undefined, true);
+        
+//     },
+// });
 
 
 module.exports = {uploadStaff,uploadUser,kbDocuments,s3};

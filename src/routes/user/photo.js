@@ -107,9 +107,7 @@ router.get("/remove/:userId", async (req, res) => {
 
     res.status(200).json({ success: 1, message: "Profile Photo Removed" });
   } catch (e) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: e.message });
+    res.status(500).json({ message: "Internal Server Error", error: e.message });
   }
 });
 

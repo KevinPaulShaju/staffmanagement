@@ -94,7 +94,7 @@ exports.deleteRole = async (req, res) => {
         staffNumber: staffsWithThisRole.length,
       });
     }
-    await staffsWithThisRole.remove();
+    await roleExists.remove();
     res
       .status(200)
       .json({ message: "This role has been successfully deleted" });
