@@ -53,7 +53,7 @@ exports.getRole = async (req, res) => {
   const permissionId = req.params.permissionId;
 
   try {
-    const role = await Roles.find({ _id: permissionId });
+    const role = await Roles.findOne({ _id: permissionId });
     if (!role) {
       return res
         .status(404)
