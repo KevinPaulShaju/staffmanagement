@@ -23,18 +23,21 @@ const rolesValidation = (data) => {
 };
 
 const newPermissionsValidation = (data) => {
-  const schema = Joi.object().required().keys({
-    role: Joi.string().required(),
-    adminModule: validation,
-    staffModule: validation,
-    financeModule: validation,
-    ndisModule: validation,
-    nagModule: validation,
-    careTakerModule: validation,
-    patientModule: validation,
-    scheduleModule: validation,
-    supportCoordinatorModule: validation,
-  });
+  const schema = Joi.object()
+    .required()
+    .keys({
+      role: Joi.string().required(),
+      adminModule: validation,
+      staffModule: validation,
+      financeModule: validation,
+      ndisModule: validation,
+      nagModule: validation,
+      careTakerModule: validation,
+      patientModule: validation,
+      scheduleModule: validation,
+      supportCoordinatorModule: validation,
+      docTypes: Joi.array().items(Joi.string()),
+    });
 
   return schema.validate(data);
 };

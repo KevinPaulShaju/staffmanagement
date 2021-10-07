@@ -17,6 +17,7 @@ const rolesSchema = new mongoose.Schema({
   ndisModule: Modules,
   nagModule: Modules,
   supportCoordinatorModule: Modules,
+  docTypes: { type: Array },
 });
 
 const Roles = new mongoose.model("Roles", rolesSchema);

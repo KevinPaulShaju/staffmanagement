@@ -14,9 +14,11 @@ exports.createRole = async (req, res) => {
       return res.status(406).json({ error: "This role already exists" });
     }
     const newRole = new Roles(req.body);
-    console.log(req.body);
     const savedRole = await newRole.save();
-    res.status(200).json({ message: "New role has been added successfully" });
+    res.status(200).json({
+      message: "New role has been added successfully",
+      savedRole: savedRole,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
