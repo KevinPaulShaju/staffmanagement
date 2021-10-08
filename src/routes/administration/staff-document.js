@@ -77,6 +77,7 @@ router.post(
   "/update/document/:documentId",
   staffDocuments.single("document"),
   async (req, res) => {
+    const { docNumber, docType, docExpiryDate } = req.body;
     const _id = req.params.documentId;
     const findDocument = await Document.findOne({ _id });
     if (!findDocument) {
@@ -99,6 +100,9 @@ router.post(
       });
 
       findDocument.url = req.file.location;
+      findDocument.docNumber = docNumber;
+      findDocument.docType = docType;
+      findDocument.docExpiryDate = docExpiryDate;
       findDocument.docUploadDate = new Date();
       await findDocument.save();
       return res

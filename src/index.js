@@ -26,7 +26,7 @@ const corsOptions = {
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
-console.log(new Date())
+console.log(new Date("10/14/2021"))
 // body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
