@@ -245,9 +245,9 @@ exports.deletestaffAccount = async (req, res) => {
 // view all staff by role
 
 exports.viewStaff = async (req, res) => {
-  const role = req.query.role;
+  const roleId = req.params.roleId;
   try {
-    const findStaffs = await Staff.find({ role: role }).select("-password");
+    const findStaffs = await Staff.find({ roleId: roleId }).select("-password");
     if (findStaffs.length === 0) {
       return res.status(200).json({ message: "No Staff profile to view" });
     } else {
@@ -278,12 +278,28 @@ exports.staffProfile = async (req, res) => {
     if (!findStaff) {
       return res.status(404).json({ error: "Staff not found" });
     }
-    const roles = await Roles.findOne({ staffId: findStaff.roleId });
+    const roles = await Roles.findOne({ _id: findStaff.roleId });
     if (!roles) {
       res.status(404).json({ error: "Missing roles data" });
     }
     res.status(200).json({ staff: findStaff, roles: roles });
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+};
+
+exports.getSupportCoordinator = async (req, res) => {
+  try {
+    const role = await Roles.findOne({ role: "Support Coordinator" });
+    if (!role) {
+      return res.status(404).json({ error: "Role not found" });
+    }
+    const support = await Staff.find({ roleId: role.id });
+    if (!support || support.length === 0) {
+      return res.status(404).json({ error: "No users found" });
+    }
+    res.status(200).json({ staff: support });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
