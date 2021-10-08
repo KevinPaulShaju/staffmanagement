@@ -10,7 +10,6 @@ router.post(
   "/add/:staffId",
   staffDocuments.single("document"),
   async (req, res) => {
-
     console.log(process.env.SECERET_ACCESS_KEY);
     const _id = req.params.staffId;
     const findStaff = await Staff.findOne({ _id });
@@ -28,6 +27,7 @@ router.post(
       url: req.file.location,
       docNumber,
       docExpiryDate,
+      docUploadDate: new Date(),
     });
     const savedDocument = await newDocument.save();
     res
@@ -99,6 +99,7 @@ router.post(
       });
 
       findDocument.url = req.file.location;
+      findDocument.docUploadDate = new Date();
       await findDocument.save();
       return res
         .status(200)
