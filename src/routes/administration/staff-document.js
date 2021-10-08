@@ -10,7 +10,8 @@ router.post(
   "/add/:staffId",
   staffDocuments.single("document"),
   async (req, res) => {
-    console.log(req.file);
+
+    console.log(process.env.SECERET_ACCESS_KEY);
     const _id = req.params.staffId;
     const findStaff = await Staff.findOne({ _id });
     if (!findStaff) {
