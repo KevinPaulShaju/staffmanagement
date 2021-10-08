@@ -15,6 +15,7 @@ const kbSubRoutes = require("./routes/administration/kbSubCat");
 const scheduleRoutes = require("./routes/schedules/schedules");
 const permissionsRoutes = require("./routes/administration/permissions");
 const brokerageRoutes = require("./routes/administration/brokerage");
+const documentRouter = require("./routes/administration/staff-document");
 // env config
 dotenv.config({ path: "config/config.env" });
 
@@ -62,6 +63,8 @@ app.use("/api/schedules", scheduleRoutes);
 app.use("/api/permissions", permissionsRoutes);
 
 app.use("/api/brokerage", brokerageRoutes);
+
+app.use("/api/staffdocument",documentRouter);
 
 const PORT = process.env.PORT || 5000;
 

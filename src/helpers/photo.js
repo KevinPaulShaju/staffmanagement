@@ -13,15 +13,6 @@ aws.config.update({
 
 var s3 = new aws.S3();
 
-const storageKbDocuments = multer.diskStorage({
-    destination: "./uploads/kbdocuments/",
-
-    filename: function (req, file, cb) {
-        return cb(null,`${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
-    },
-});
-
-
 const uploadStaff = multer({
     storage: multerS3({
         s3: s3,
@@ -95,22 +86,26 @@ const kbDocuments = multer({
     },
 });
 
-
-
-// const kbDocuments = multer({
-//     storage: storageKbDocuments,
-//     limits: {
-//         fileSize: 5000000*2,
-//     },
-//     abortOnLimit: true,
-//     fileFilter(req, file, cb,next) {
-//         if (!file.originalname.match(/\.(pdf|txt)$/)) {
-//             return cb(new Error("Please Upload a Photo"));
-//         }
-//         cb(undefined, true);
+const staffDocuments = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'staff-document',
+        acl:'public-read',
+        metadata: function(req, res,cb){
+            return cb(null,{fieldname:'User Photo'});
+        },
+        key: function (req, file, cb) {
+            console.log(file);
+            return cb(null,`${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
+        }
         
-//     },
-// });
+    }),
+    limits:{
+        fileSize: 1000000*10,
+    },
+});
 
 
-module.exports = {uploadStaff,uploadUser,kbDocuments,s3};
+
+
+module.exports = {uploadStaff,uploadUser,kbDocuments,staffDocuments,s3};

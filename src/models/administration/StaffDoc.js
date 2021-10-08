@@ -4,9 +4,9 @@ const Schema = mongoose.Schema;
 const StaffDocSchema = new mongoose.Schema({
   StaffId: { type: Schema.Types.ObjectId, ref: "Staff" },
   docType: { type: String, required: true },
-  url: { type: String, required: true },
+  url: { type: String, required: true , default:null},
   docNumber: { type: String },
-  docExpiryDate: { type: Date },
+  // docExpiryDate: { type: Date },
   // policeCheckIssueDate: { type: Date },
   // policeCheckIssuePath: { type: String, required: true },
   // wwcCertificateNumber: { type: Number },
