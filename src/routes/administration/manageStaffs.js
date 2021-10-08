@@ -9,6 +9,7 @@ const {
   viewStaff,
   staffProfile,
   viewAllStaffs,
+  getSupportCoordinator,
 } = require("../../controllers/administration/manageStaff");
 const upload = require("../../helpers/photo");
 
@@ -93,9 +94,10 @@ router.get("/view/staff/:staffId", staffProfile);
 router.post("/permissions/:staffId", changeRoles);
 
 /**
- * @description get staff roles
+ * @description get support coordinator staffs
  * @method GET
- * @route /staff/roles/:staffId?role=role
+ * @route /staff/support/all
  **/
+router.get("/staff/support/all", getSupportCoordinator);
 
 module.exports = router;
